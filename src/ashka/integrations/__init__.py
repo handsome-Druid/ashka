@@ -2,9 +2,18 @@ from importlib import import_module
 
 from dishka import AsyncContainer, Container
 
-from . import fastapi, flask, sanic
+from . import aiohttp, fastapi, flask, litestar, sanic, starlette
 
-__all__ = ["fastapi", "flask", "get_container", "sanic", "setup_dishka"]
+__all__ = [
+    "aiohttp",
+    "fastapi",
+    "flask",
+    "get_container",
+    "litestar",
+    "sanic",
+    "setup_dishka",
+    "starlette",
+]
 
 
 def setup_dishka(container: Container | AsyncContainer, app: object) -> None:
