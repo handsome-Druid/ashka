@@ -6,14 +6,18 @@ from ashka.integrations.taskiq import get_container
 from dishka import AsyncContainer, make_async_container
 from dishka.integrations.taskiq import setup_dishka
 from pytest import fixture
-from taskiq import AsyncBroker
+from taskiq import AsyncBroker, BrokerMessage
 
 
 @fixture
 def broker():
-    del AsyncBroker.__abstractmethods__
-    (broker := AsyncBroker.__new__(AsyncBroker)).__init__()
-    return broker
+    class Broker(AsyncBroker):
+        async def kick(self, message: BrokerMessage): ...
+
+        async def listen(self):
+            yield b""  # pragma: no cover
+
+    return Broker()
 
 
 @fixture

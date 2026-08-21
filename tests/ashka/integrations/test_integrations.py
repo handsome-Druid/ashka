@@ -15,7 +15,7 @@ from litestar import Litestar
 from pytest import fixture, raises
 from sanic import Config, Sanic
 from starlette.applications import Starlette
-from taskiq import AsyncBroker
+from taskiq import AsyncBroker, BrokerMessage
 
 
 @fixture
@@ -60,9 +60,13 @@ def celery():
 
 @fixture
 def taskiq():
-    del AsyncBroker.__abstractmethods__
-    (broker := AsyncBroker.__new__(AsyncBroker)).__init__()
-    return broker
+    class Broker(AsyncBroker):
+        async def kick(self, message: BrokerMessage): ...
+
+        async def listen(self):
+            yield b""  # pragma: no cover
+
+    return Broker()
 
 
 @fixture
