@@ -2,11 +2,14 @@ from types import SimpleNamespace
 
 from ashka.integrations import get_container, setup_dishka
 
+from aiohttp.web_app import Application
 from dishka import AsyncContainer, Container, make_async_container, make_container
 from fastapi import FastAPI
 from flask import Flask
+from litestar import Litestar
 from pytest import fixture, raises
 from sanic import Config, Sanic
+from starlette.applications import Starlette
 
 
 @fixture
@@ -22,6 +25,21 @@ def flask():
 @fixture
 def fastapi():
     return FastAPI()
+
+
+@fixture
+def starlette():
+    return Starlette()
+
+
+@fixture
+def aiohttp():
+    return Application()
+
+
+@fixture
+def litestar():
+    return Litestar()
 
 
 @fixture
@@ -47,6 +65,21 @@ def test_flask(container: Container, flask: Flask):
 def test_fastapi(async_container: AsyncContainer, fastapi: FastAPI):
     setup_dishka(async_container, fastapi)
     assert get_container(fastapi) is async_container
+
+
+def test_starlette(async_container: AsyncContainer, starlette: Starlette):
+    setup_dishka(async_container, starlette)
+    assert get_container(starlette) is async_container
+
+
+def test_aiohttp(async_container: AsyncContainer, aiohttp: Application):
+    setup_dishka(async_container, aiohttp)
+    assert get_container(aiohttp) is async_container
+
+
+def test_litestar(async_container: AsyncContainer, litestar: Litestar):
+    setup_dishka(async_container, litestar)
+    assert get_container(litestar) is async_container
 
 
 def test_import_error(async_container: AsyncContainer, fake_app: object = object()):
