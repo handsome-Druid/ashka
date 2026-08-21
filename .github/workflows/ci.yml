@@ -45,8 +45,8 @@ jobs:
           while minor < 100:
               version = Version(f"3.{minor}")
               if version in requires_python:
-              python_versions.append(str(version))
-            elif python_versions:
+                python_versions.append(str(version))
+              elif python_versions:
                   break
               minor += 1
 
@@ -56,40 +56,40 @@ jobs:
               )
 
           dishka = next(
-            (
-              requirement
-              for dependency in project["dependencies"]
-              if (requirement := Requirement(dependency)).name == "dishka"
-            ),
-            None,
+              (
+                  requirement
+                  for dependency in project["dependencies"]
+                  if (requirement := Requirement(dependency)).name == "dishka"
+              ),
+              None,
           )
           if dishka is None:
-            raise RuntimeError("Dishka dependency not found")
+              raise RuntimeError("Dishka dependency not found")
 
           lower_bounds = [
-            Version(specifier.version)
-            for specifier in dishka.specifier
-            if specifier.operator == ">="
+              Version(specifier.version)
+              for specifier in dishka.specifier
+              if specifier.operator == ">="
           ]
           upper_bounds = [
-            Version(specifier.version)
-            for specifier in dishka.specifier
-            if specifier.operator == "<="
+              Version(specifier.version)
+              for specifier in dishka.specifier
+              if specifier.operator == "<="
           ]
           if not lower_bounds or not upper_bounds:
-            raise RuntimeError(
-              f"Dishka must have closed >= and <= bounds: {dishka.specifier}"
-            )
+              raise RuntimeError(
+                  f"Dishka must have closed >= and <= bounds: {dishka.specifier}"
+              )
 
           dishka_versions = list(
-            dict.fromkeys(map(str, (max(lower_bounds), min(upper_bounds))))
+              dict.fromkeys(map(str, (max(lower_bounds), min(upper_bounds))))
           )
           if any(version not in dishka.specifier for version in map(Version, dishka_versions)):
-            raise RuntimeError(f"Invalid Dishka bounds: {dishka.specifier}")
+              raise RuntimeError(f"Invalid Dishka bounds: {dishka.specifier}")
 
           print(json.dumps({
-            "python": python_versions,
-            "dishka": dishka_versions,
+              "python": python_versions,
+              "dishka": dishka_versions,
           }))
           PY
           )
