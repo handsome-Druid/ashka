@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Addons for dishka"
 readme = "README.md"
 authors = [
-    { name = "山泥若叶睦", email = "102826168@qq.com" }
+    { name = "handsome-Druid", email = "102826168@qq.com" }
 ]
 requires-python = ">=3.10"
 dependencies = [
