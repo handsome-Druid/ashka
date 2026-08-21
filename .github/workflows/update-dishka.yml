@@ -1,0 +1,86 @@
+name: Update Dishka
+
+on:
+  schedule:
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Get latest Dishka version
+        id: dishka
+        run: |
+          latest=$(uv run --with packaging python -c '
+          import json
+          from urllib.request import urlopen
+          from packaging.version import Version
+
+          with urlopen("https://pypi.org/pypi/dishka/json") as response:
+              releases = json.load(response)["releases"]
+
+          versions = [
+              Version(version)
+              for version, files in releases.items()
+              if files
+              and not Version(version).is_prerelease
+              and not all(file["yanked"] for file in files)
+          ]
+          print(max(versions))
+          ')
+          echo "version=$latest" >> "$GITHUB_OUTPUT"
+
+      - name: Update Dishka requirement
+        run: uv add "dishka>=1.10.1,<=${{ steps.dishka.outputs.version }}"
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run tests
+        if: steps.changes.outputs.changed == 'true'
+        run: uv run pytest --cov=ashka --cov-report=term-missing
+
+      - name: Run lint
+        if: steps.changes.outputs.changed == 'true'
+        run: uv run ruff check .
+
+      - name: Bump package version
+        if: steps.changes.outputs.changed == 'true'
+        run: uv version --bump patch
+
+      - name: Commit and push release
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml uv.lock
+          git commit -m "Update Dishka to ${{ steps.dishka.outputs.version }}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+          tag="v$(uv version --short)"
+          git tag "$tag"
+          git push origin "$tag"
