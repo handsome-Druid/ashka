@@ -2,6 +2,7 @@ from types import SimpleNamespace
 
 from ashka.integrations import get_container, setup_dishka
 
+from aiogram import Router
 from aiohttp.web_app import Application
 from dishka import AsyncContainer, Container, make_async_container, make_container
 from fastapi import FastAPI
@@ -43,6 +44,11 @@ def litestar():
 
 
 @fixture
+def aiogram():
+    return Router()
+
+
+@fixture
 def async_container():
     return make_async_container()
 
@@ -80,6 +86,11 @@ def test_aiohttp(async_container: AsyncContainer, aiohttp: Application):
 def test_litestar(async_container: AsyncContainer, litestar: Litestar):
     setup_dishka(async_container, litestar)
     assert get_container(litestar) is async_container
+
+
+def test_aiogram(async_container: AsyncContainer, aiogram: Router):
+    setup_dishka(async_container, aiogram)
+    assert get_container(aiogram) is async_container
 
 
 def test_import_error(async_container: AsyncContainer, fake_app: object = object()):

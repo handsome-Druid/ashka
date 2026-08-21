@@ -5,12 +5,7 @@
 
 ## Dishka Patched Implementations
 
-- `dishka.integrations.aiohttp.setup_dishka` -> `ashka.integrations.aiohttp.setup_dishka`
-- `dishka.integrations.fastapi.setup_dishka` -> `ashka.integrations.fastapi.setup_dishka`
-- `dishka.integrations.starlette.setup_dishka` -> `ashka.integrations.starlette.setup_dishka`
-- `dishka.integrations.litestar.setup_dishka` -> `ashka.integrations.litestar.setup_dishka`
-- `dishka.integrations.flask.setup_dishka` -> `ashka.integrations.flask.setup_dishka`
-- `dishka.integrations.sanic.setup_dishka` -> `ashka.integrations.sanic.setup_dishka`
+- `dishka.integrations.*.setup_dishka` -> `ashka.integrations.*.setup_dishka`
 
 ## Disable Import Warning
 

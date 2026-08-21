@@ -16,13 +16,17 @@ __all__ = [
 ]
 
 
-def setup_dishka(container: Container | AsyncContainer, app: object, *args: object, **kwargs: object) -> None:
+def setup_dishka(
+    container: Container | AsyncContainer, app: object, *args: object, **kwargs: object
+) -> None:
     import_module(
         "ashka.integrations." + type(app).__module__.split(".", 1)[0]
     ).setup_dishka(container, app, *args, **kwargs)
 
 
-def get_container(app: object, *args: object, **kwargs: object) -> Container | AsyncContainer:
+def get_container(
+    app: object, *args: object, **kwargs: object
+) -> Container | AsyncContainer:
     return import_module(
         "ashka.integrations." + type(app).__module__.split(".", 1)[0]
     ).get_container(app, *args, **kwargs)

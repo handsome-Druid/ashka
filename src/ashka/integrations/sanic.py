@@ -14,8 +14,8 @@ if find_spec("sanic"):
     def setup_dishka(
         container: AsyncContainer, app: Sanic[Any, Any], *args: object, **kwargs: object
     ) -> None:
-        app.ctx.dishka_container = container
         _setup_dishka(container, app, *args, **kwargs)
+        app.ctx.dishka_container = container
 
     sanic.setup_dishka = setup_dishka
 

@@ -13,8 +13,8 @@ if find_spec("flask"):
     def setup_dishka(
         container: Container, app: Flask, *args: object, **kwargs: object
     ) -> None:
-        app.extensions["dishka_container"] = container
         _setup_dishka(container, app, *args, **kwargs)
+        app.extensions["dishka_container"] = container
 
     flask.setup_dishka = setup_dishka
 
