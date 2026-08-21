@@ -1,3 +1,4 @@
+from importlib import import_module
 from types import SimpleNamespace
 
 from ashka.integrations import __all__, get_container, setup_dishka
@@ -108,3 +109,4 @@ def test_all():
 
     for module in all:
         assert "test_" + module in globals()
+        import_module("tests.ashka.integrations.test_" + module)
