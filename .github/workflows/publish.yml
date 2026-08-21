@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "*"
+  workflow_dispatch:
 
 permissions:
   actions: read
@@ -29,7 +30,6 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 workflow_id: "ci.yml",
-                event: "push",
                 head_sha: context.sha,
                 per_page: 1,
               });

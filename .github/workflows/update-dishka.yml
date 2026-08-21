@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
 
 jobs:
@@ -60,19 +61,11 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Run tests
-        if: steps.changes.outputs.changed == 'true'
-        run: uv run pytest --cov=ashka --cov-report=term-missing
-
-      - name: Run lint
-        if: steps.changes.outputs.changed == 'true'
-        run: uv run ruff check .
-
       - name: Bump package version
         if: steps.changes.outputs.changed == 'true'
         run: uv version --bump patch
 
-      - name: Commit and push release
+      - name: Commit and push update
         if: steps.changes.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
@@ -81,6 +74,30 @@ jobs:
           git commit -m "Update Dishka to ${{ steps.dishka.outputs.version }}"
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
+      - name: Run CI
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(git rev-parse HEAD)
+          gh workflow run ci.yml --ref "$GITHUB_REF_NAME" -f ref="$sha"
+
+          while true; do
+            run_id=$(gh run list --workflow ci.yml --event workflow_dispatch --commit "$sha" --json databaseId --jq '.[0].databaseId')
+            if [ -n "$run_id" ]; then
+              break
+            fi
+            sleep 5
+          done
+
+          gh run watch "$run_id" --exit-status
+
+      - name: Tag and publish release
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
           tag="v$(uv version --short)"
           git tag "$tag"
           git push origin "$tag"
+          gh workflow run publish.yml --ref "$tag"
