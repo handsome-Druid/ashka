@@ -26,15 +26,15 @@ jobs:
       - name: Generate Python matrix
         id: matrix
         run: |
-          versions=$(uv run --no-project --with packaging python - <<'PY'
+          versions=$(uv run --no-project --with packaging --with tomli python - <<'PY'
           import json
-          import tomllib
           from pathlib import Path
 
+          import tomli
           from packaging.specifiers import SpecifierSet
           from packaging.version import Version
 
-          project = tomllib.loads(Path("pyproject.toml").read_text())["project"]
+          project = tomli.loads(Path("pyproject.toml").read_text())["project"]
           requires_python = SpecifierSet(project["requires-python"])
 
           versions = []
