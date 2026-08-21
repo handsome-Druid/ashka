@@ -1,5 +1,8 @@
 # ashka
 
+[![CI](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml/badge.svg)](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml)
+[![Publish](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml/badge.svg)](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml)
+
 ## Dishka Patched Implementations
 
 - `dishka.integrations.fastapi.setup_dishka` -> `ashka.integrations.fastapi.setup_dishka`
