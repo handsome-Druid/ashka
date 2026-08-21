@@ -1,10 +1,9 @@
 from subprocess import run
 from sys import executable
 
-from ashka.integrations.starlette import get_container
+from ashka.integrations.starlette import get_container, setup_dishka
 
 from dishka import AsyncContainer, make_async_container
-from dishka.integrations.starlette import setup_dishka
 from pytest import fixture
 from starlette.applications import Starlette
 

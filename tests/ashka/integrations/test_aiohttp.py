@@ -1,11 +1,11 @@
 from subprocess import run
 from sys import executable
 
-from ashka.integrations.aiohttp import get_container
+from ashka.integrations.aiohttp import get_container, setup_dishka
 
 from aiohttp.web_app import Application
 from dishka import AsyncContainer, make_async_container
-from dishka.integrations.aiohttp import DISHKA_CONTAINER_KEY, setup_dishka
+from dishka.integrations.aiohttp import DISHKA_CONTAINER_KEY
 from pytest import fixture
 
 
