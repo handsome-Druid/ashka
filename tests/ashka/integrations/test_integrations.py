@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from ashka.integrations import get_container, setup_dishka
+from ashka.integrations import __all__, get_container, setup_dishka
 
 from aiogram import Router
 from aiohttp.web_app import Application
@@ -99,3 +99,12 @@ def test_import_error(async_container: AsyncContainer, fake_app: object = object
 
     with raises(ImportError):
         get_container(fake_app)
+
+
+def test_all():
+    all = list(__all__)
+    all.remove("get_container")
+    all.remove("setup_dishka")
+
+    for module in all:
+        assert "test_" + module in globals()
