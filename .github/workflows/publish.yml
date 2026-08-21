@@ -1,0 +1,65 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+
+    steps:
+      - name: Wait for CI
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deadline = Date.now() + 30 * 60 * 1000;
+            let run;
+
+            while (Date.now() < deadline) {
+              const { data } = await github.rest.actions.listWorkflowRunsForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                event: "push",
+                head_sha: context.sha,
+                per_page: 100,
+              });
+
+              run = data.workflow_runs.find(({ name }) => name === "CI");
+              if (run && run.status === "completed") {
+                if (run.conclusion !== "success") {
+                  throw new Error(`CI finished with conclusion: ${run.conclusion}`);
+                }
+                return;
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, 30 * 1000));
+            }
+
+            throw new Error("CI did not complete within 30 minutes");
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@release/v1
