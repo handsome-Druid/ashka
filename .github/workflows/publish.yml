@@ -25,15 +25,16 @@ jobs:
             let run;
 
             while (Date.now() < deadline) {
-              const { data } = await github.rest.actions.listWorkflowRunsForRepo({
+              const { data } = await github.rest.actions.listWorkflowRuns({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
+                workflow_id: "ci.yml",
                 event: "push",
                 head_sha: context.sha,
-                per_page: 100,
+                per_page: 1,
               });
 
-              run = data.workflow_runs.find(({ name }) => name === "CI");
+              [run] = data.workflow_runs;
               if (run && run.status === "completed") {
                 if (run.conclusion !== "success") {
                   throw new Error(`CI finished with conclusion: ${run.conclusion}`);
