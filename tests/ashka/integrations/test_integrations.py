@@ -20,42 +20,58 @@ from taskiq import AsyncBroker, BrokerMessage
 
 @fixture
 def sanic():
-    return Sanic(__name__)
+    class Sanic_(Sanic[Config, SimpleNamespace]): ...
+
+    return Sanic_(__name__)
 
 
 @fixture
 def flask():
-    return Flask(__name__)
+    class Flask_(Flask): ...
+
+    return Flask_(__name__)
 
 
 @fixture
 def fastapi():
-    return FastAPI()
+    class FastAPI_(FastAPI): ...
+
+    return FastAPI_()
 
 
 @fixture
 def starlette():
-    return Starlette()
+    class Starlette_(Starlette): ...
+
+    return Starlette_()
 
 
 @fixture
 def aiohttp():
-    return Application()
+    class Application_(Application): ...
+
+    return Application_()
 
 
 @fixture
 def litestar():
-    return Litestar()
+    class Litestar_(Litestar): ...
+
+    return Litestar_()
 
 
 @fixture
 def aiogram():
-    return Router()
+    class Router_(Router): ...
+
+    return Router_()
 
 
 @fixture
 def celery():
-    return Celery()
+    class Celery_(Celery): ...
+
+    return Celery_()
 
 
 @fixture
