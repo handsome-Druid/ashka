@@ -1,4 +1,4 @@
-name: Update Dishka
+name: Update dishka
 
 on:
   schedule:
@@ -27,7 +27,7 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Get latest Dishka version
+      - name: Get latest dishka version
         id: dishka
         run: |
           latest=$(uv run --with packaging python -c '
@@ -49,7 +49,7 @@ jobs:
           ')
           echo "version=$latest" >> "$GITHUB_OUTPUT"
 
-      - name: Update Dishka requirement
+      - name: Update dishka requirement
         run: uv add "dishka>=1.10.1,<=${{ steps.dishka.outputs.version }}"
 
       - name: Check for changes
@@ -71,7 +71,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add pyproject.toml uv.lock
-          git commit -m "Update Dishka to ${{ steps.dishka.outputs.version }}"
+          git commit -m "Update dishka to ${{ steps.dishka.outputs.version }}"
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
       - name: Run CI

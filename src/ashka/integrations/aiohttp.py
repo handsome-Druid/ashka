@@ -16,10 +16,7 @@ if find_spec("aiohttp"):
     ):
         aiohttp.setup_dishka(container, app, *args, **kwargs)
 
-    def setup_dishka(
-        container: AsyncContainer, app: Application, *args: object, **kwargs: object
-    ) -> None:
-        _dishka_setup(app, container, *args, **kwargs)
+    setup_dishka = aiohttp.setup_dishka
 
     @get_container_.register(Application)
     def get_container(app: Application) -> AsyncContainer:

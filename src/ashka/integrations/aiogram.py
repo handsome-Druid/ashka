@@ -19,8 +19,10 @@ if find_spec("aiogram"):
         _setup_dishka(container, router, *args, **kwargs)
         router.dishka_container = container  # pyright: ignore[reportAttributeAccessIssue]
 
-    def setup_dishka(container: AsyncContainer, router: Router) -> None:
-        _dishka_setup(router, container)
+    def setup_dishka(
+        container: AsyncContainer, router: Router, *args: object, **kwargs: object
+    ) -> None:
+        _dishka_setup(router, container, *args, **kwargs)
 
     aiogram.setup_dishka = setup_dishka
 

@@ -7,7 +7,9 @@ from ashka.integrations import __all__, get_container, setup_dishka
 
 from aiogram import Router
 from aiohttp.web_app import Application
+from arq import Worker
 from celery import Celery
+from click import Command, Context
 from dishka import AsyncContainer, Container, make_async_container, make_container
 from fastapi import FastAPI
 from flask import Flask
@@ -16,6 +18,7 @@ from pytest import fixture, raises
 from sanic import Config, Sanic
 from starlette.applications import Starlette
 from taskiq import AsyncBroker, BrokerMessage
+from telebot import TeleBot
 
 
 @fixture
@@ -86,6 +89,29 @@ def taskiq():
 
 
 @fixture
+def arq():
+    class Worker_(Worker): ...
+
+    async def task(ctx: dict[object, object]): ...
+
+    return Worker_([task])
+
+
+@fixture
+def click():
+    class Context_(Context): ...
+
+    return Context_(Command(__name__))
+
+
+@fixture
+def telebot():
+    class TeleBot_(TeleBot): ...
+
+    return TeleBot_("1:test")
+
+
+@fixture
 def async_container():
     return make_async_container()
 
@@ -138,6 +164,21 @@ def test_celery(container: Container, celery: Celery):
 def test_taskiq(async_container: AsyncContainer, taskiq: AsyncBroker):
     setup_dishka(async_container, taskiq)
     assert get_container(taskiq) is async_container
+
+
+def test_arq(async_container: AsyncContainer, arq: Worker):
+    setup_dishka(async_container, arq)
+    assert get_container(arq) is async_container
+
+
+def test_click(container: Container, click: Context):
+    setup_dishka(container, click)
+    assert get_container(click) is container
+
+
+def test_telebot(container: Container, telebot: TeleBot):
+    setup_dishka(container, telebot)
+    assert get_container(telebot) is container
 
 
 def test_type_error(async_container: AsyncContainer, fake_app: object = object()):

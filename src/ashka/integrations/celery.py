@@ -16,10 +16,7 @@ if find_spec("celery"):
     ):
         celery.setup_dishka(container, app, *args, **kwargs)
 
-    def setup_dishka(
-        container: Container, app: Celery, *args: object, **kwargs: object
-    ) -> None:
-        _dishka_setup(app, container, *args, **kwargs)
+    setup_dishka = celery.setup_dishka
 
     @get_container_.register(Celery)
     def get_container(app: Celery) -> Container:

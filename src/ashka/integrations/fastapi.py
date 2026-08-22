@@ -19,13 +19,7 @@ if find_spec("fastapi"):
     ):
         fastapi.setup_dishka(container, app, *args, **kwargs)
 
-    def setup_dishka(
-        container: Container | AsyncContainer,
-        app: FastAPI,
-        *args: object,
-        **kwargs: object,
-    ):
-        _dishka_setup(app, container, *args, **kwargs)
+    setup_dishka = fastapi.setup_dishka
 
     @get_container_.register(FastAPI)
     def get_container(app: FastAPI) -> Container | AsyncContainer:

@@ -1,10 +1,11 @@
 from subprocess import run
 from sys import executable
 
-from ashka.integrations.aiogram import get_container, setup_dishka
+from ashka.integrations.aiogram import get_container
 
 from aiogram import Router
 from dishka import AsyncContainer, make_async_container
+from dishka.integrations.aiogram import setup_dishka
 from pytest import fixture
 
 

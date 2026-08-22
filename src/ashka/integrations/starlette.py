@@ -16,10 +16,7 @@ if find_spec("starlette"):
     ):
         starlette.setup_dishka(container, app, *args, **kwargs)
 
-    def setup_dishka(
-        container: AsyncContainer, app: Starlette, *args: object, **kwargs: object
-    ) -> None:
-        _dishka_setup(app, container, *args, **kwargs)
+    setup_dishka = starlette.setup_dishka
 
     @get_container_.register(Starlette)
     def get_container(app: Starlette) -> AsyncContainer:

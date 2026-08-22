@@ -3,13 +3,16 @@ from dishka import AsyncContainer, Container
 from . import (
     aiogram,
     aiohttp,
+    arq,
     celery,
+    click,
     fastapi,
     flask,
     litestar,
     sanic,
     starlette,
     taskiq,
+    telebot,
 )
 from ._dispatch import dishka_setup
 from ._dispatch import get_container_ as get_container
@@ -17,7 +20,9 @@ from ._dispatch import get_container_ as get_container
 __all__ = [
     "aiogram",
     "aiohttp",
+    "arq",
     "celery",
+    "click",
     "fastapi",
     "flask",
     "get_container",
@@ -26,6 +31,7 @@ __all__ = [
     "setup_dishka",
     "starlette",
     "taskiq",
+    "telebot",
 ]
 
 

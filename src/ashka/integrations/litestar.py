@@ -16,10 +16,7 @@ if find_spec("litestar"):
     ):
         litestar.setup_dishka(container, app, *args, **kwargs)
 
-    def setup_dishka(
-        container: AsyncContainer, app: Litestar, *args: object, **kwargs: object
-    ) -> None:
-        _dishka_setup(app, container, *args, **kwargs)
+    setup_dishka = litestar.setup_dishka
 
     @get_container_.register(Litestar)
     def get_container(app: Litestar) -> AsyncContainer:

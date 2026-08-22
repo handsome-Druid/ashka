@@ -51,7 +51,7 @@ jobs:
           ]
           if len(dependencies) != 1 or dependencies[0].name.lower() != "dishka":
               raise RuntimeError(
-                  f"Dishka must be the only project dependency: {dependencies}"
+                  f"dishka must be the only project dependency: {dependencies}"
               )
 
           python_versions = []
@@ -84,14 +84,14 @@ jobs:
           ]
           if not lower_bounds or not upper_bounds:
               raise RuntimeError(
-                  f"Dishka must have closed >= and <= bounds: {dishka.specifier}"
+                  f"dishka must have closed >= and <= bounds: {dishka.specifier}"
               )
 
           dishka_versions = list(
               dict.fromkeys(map(str, (max(lower_bounds), min(upper_bounds))))
           )
           if any(version not in dishka.specifier for version in map(Version, dishka_versions)):
-              raise RuntimeError(f"Invalid Dishka bounds: {dishka.specifier}")
+              raise RuntimeError(f"Invalid dishka bounds: {dishka.specifier}")
 
           print(json.dumps({
               "python": python_versions,
@@ -104,7 +104,7 @@ jobs:
 
   test:
     needs: matrix
-    name: Test (Python ${{ matrix.python-version }}, Dishka ${{ matrix.dishka-version }})
+    name: Test (Python ${{ matrix.python-version }}, dishka ${{ matrix.dishka-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -186,7 +186,7 @@ jobs:
 
   production:
     needs: matrix
-    name: Production (Python ${{ matrix.python-version }}, Dishka ${{ matrix.dishka-version }})
+    name: Production (Python ${{ matrix.python-version }}, dishka ${{ matrix.dishka-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

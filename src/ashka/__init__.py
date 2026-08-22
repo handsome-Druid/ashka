@@ -8,8 +8,8 @@ if "dishka" in modules and getenv(
     getLogger(__name__).warning(
         "'dishka' was imported before 'ashka', which may lead to unexpected errors. "
         "Make sure you are using the documented public APIs listed under "
-        "'Dishka Patched Implementations' in the package documentation "
-        "instead of Dishka's original implementations, or swap the order."
+        "'Patched Implementations' in the package documentation "
+        "instead of dishka's original implementations, or swap the order."
         f"Set the environment variable '{env}' to disable this warning"
     )
 
