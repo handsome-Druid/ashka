@@ -45,13 +45,13 @@ jobs:
 
           project = tomli.loads(Path("pyproject.toml").read_text())["project"]
           requires_python = SpecifierSet(project["requires-python"])
-            dependencies = [
+          dependencies = [
               Requirement(dependency)
               for dependency in project["dependencies"]
-            ]
-            if len(dependencies) != 1 or dependencies[0].name.lower() != "dishka":
+          ]
+          if len(dependencies) != 1 or dependencies[0].name.lower() != "dishka":
               raise RuntimeError(
-                f"Dishka must be the only project dependency: {dependencies}"
+                  f"Dishka must be the only project dependency: {dependencies}"
               )
 
           python_versions = []
@@ -70,16 +70,7 @@ jobs:
                   f"No supported Python versions found for {requires_python}"
               )
 
-          dishka = next(
-              (
-                  requirement
-                for requirement in dependencies
-                if requirement.name.lower() == "dishka"
-              ),
-              None,
-          )
-          if dishka is None:
-              raise RuntimeError("Dishka dependency not found")
+          dishka = dependencies[0]
 
           lower_bounds = [
               Version(specifier.version)
