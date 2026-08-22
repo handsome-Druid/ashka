@@ -5,27 +5,36 @@ from dishka import AsyncContainer
 from ._dispatch import dishka_setup, get_container_
 
 if find_spec("taskiq"):
-    from dishka.integrations import taskiq
-    from taskiq import AsyncBroker
+    try:
+        from dishka.integrations import taskiq
+        from taskiq import AsyncBroker
 
-    __all__ = ["get_container", "setup_dishka"]
+        __all__ = ["get_container", "setup_dishka"]
 
-    _setup_dishka = taskiq.setup_dishka
+        _setup_dishka = taskiq.setup_dishka
 
-    @dishka_setup.register(AsyncBroker)
-    def _dishka_setup(
-        broker: AsyncBroker, container: AsyncContainer, *args: object, **kwargs: object
-    ):
-        _setup_dishka(container, broker, *args, **kwargs)
-        broker.state["dishka_container"] = container
+        @dishka_setup.register(AsyncBroker)
+        def _dishka_setup(
+            broker: AsyncBroker,
+            container: AsyncContainer,
+            *args: object,
+            **kwargs: object,
+        ):
+            _setup_dishka(container, broker, *args, **kwargs)
+            broker.state["dishka_container"] = container
 
-    def setup_dishka(
-        container: AsyncContainer, broker: AsyncBroker, *args: object, **kwargs: object
-    ) -> None:
-        _dishka_setup(broker, container, *args, **kwargs)
+        def setup_dishka(
+            container: AsyncContainer,
+            broker: AsyncBroker,
+            *args: object,
+            **kwargs: object,
+        ) -> None:
+            _dishka_setup(broker, container, *args, **kwargs)
 
-    taskiq.setup_dishka = setup_dishka
+        taskiq.setup_dishka = setup_dishka
 
-    @get_container_.register(AsyncBroker)
-    def get_container(broker: AsyncBroker) -> AsyncContainer:
-        return broker.state["dishka_container"]
+        @get_container_.register(AsyncBroker)
+        def get_container(broker: AsyncBroker) -> AsyncContainer:
+            return broker.state["dishka_container"]
+    except ImportError:  # pragma: no cover
+        pass

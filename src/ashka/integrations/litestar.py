@@ -5,19 +5,22 @@ from dishka import AsyncContainer
 from ._dispatch import dishka_setup, get_container_
 
 if find_spec("litestar"):
-    from dishka.integrations import litestar
-    from litestar import Litestar
+    try:
+        from dishka.integrations import litestar
+        from litestar import Litestar
 
-    __all__ = ["get_container", "setup_dishka"]
+        __all__ = ["get_container", "setup_dishka"]
 
-    @dishka_setup.register(Litestar)
-    def _dishka_setup(
-        app: Litestar, container: AsyncContainer, *args: object, **kwargs: object
-    ):
-        litestar.setup_dishka(container, app, *args, **kwargs)
+        @dishka_setup.register(Litestar)
+        def _dishka_setup(
+            app: Litestar, container: AsyncContainer, *args: object, **kwargs: object
+        ):
+            litestar.setup_dishka(container, app, *args, **kwargs)
 
-    setup_dishka = litestar.setup_dishka
+        setup_dishka = litestar.setup_dishka
 
-    @get_container_.register(Litestar)
-    def get_container(app: Litestar) -> AsyncContainer:
-        return app.state.dishka_container
+        @get_container_.register(Litestar)
+        def get_container(app: Litestar) -> AsyncContainer:
+            return app.state.dishka_container
+    except ImportError:  # pragma: no cover
+        pass

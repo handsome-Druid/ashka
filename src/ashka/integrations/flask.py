@@ -5,25 +5,30 @@ from dishka import Container
 from ._dispatch import dishka_setup, get_container_
 
 if find_spec("flask"):
-    from dishka.integrations import flask
-    from flask import Flask
+    try:
+        from dishka.integrations import flask
+        from flask import Flask
 
-    __all__ = ["get_container", "setup_dishka"]
+        __all__ = ["get_container", "setup_dishka"]
 
-    _setup_dishka = flask.setup_dishka
+        _setup_dishka = flask.setup_dishka
 
-    @dishka_setup.register(Flask)
-    def _dishka_setup(
-        app: Flask, container: Container, *args: object, **kwargs: object
-    ):
-        _setup_dishka(container, app, *args, **kwargs)
-        app.extensions["dishka_container"] = container
+        @dishka_setup.register(Flask)
+        def _dishka_setup(
+            app: Flask, container: Container, *args: object, **kwargs: object
+        ):
+            _setup_dishka(container, app, *args, **kwargs)
+            app.extensions["dishka_container"] = container
 
-    def setup_dishka(container: Container, app: Flask, *args: object, **kwargs: object):
-        _dishka_setup(app, container, *args, **kwargs)
+        def setup_dishka(
+            container: Container, app: Flask, *args: object, **kwargs: object
+        ):
+            _dishka_setup(app, container, *args, **kwargs)
 
-    flask.setup_dishka = setup_dishka
+        flask.setup_dishka = setup_dishka
 
-    @get_container_.register(Flask)
-    def get_container(app: Flask) -> Container:
-        return app.extensions["dishka_container"]
+        @get_container_.register(Flask)
+        def get_container(app: Flask) -> Container:
+            return app.extensions["dishka_container"]
+    except ImportError:  # pragma: no cover
+        pass

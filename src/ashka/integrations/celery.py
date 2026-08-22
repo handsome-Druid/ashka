@@ -5,19 +5,22 @@ from dishka import Container
 from ._dispatch import dishka_setup, get_container_
 
 if find_spec("celery"):
-    from celery import Celery
-    from dishka.integrations import celery
+    try:
+        from celery import Celery
+        from dishka.integrations import celery
 
-    __all__ = ["get_container", "setup_dishka"]
+        __all__ = ["get_container", "setup_dishka"]
 
-    @dishka_setup.register(Celery)
-    def _dishka_setup(
-        app: Celery, container: Container, *args: object, **kwargs: object
-    ):
-        celery.setup_dishka(container, app, *args, **kwargs)
+        @dishka_setup.register(Celery)
+        def _dishka_setup(
+            app: Celery, container: Container, *args: object, **kwargs: object
+        ):
+            celery.setup_dishka(container, app, *args, **kwargs)
 
-    setup_dishka = celery.setup_dishka
+        setup_dishka = celery.setup_dishka
 
-    @get_container_.register(Celery)
-    def get_container(app: Celery) -> Container:
-        return app.conf[celery.CONTAINER_NAME]  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType]
+        @get_container_.register(Celery)
+        def get_container(app: Celery) -> Container:
+            return app.conf[celery.CONTAINER_NAME]  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType]
+    except ImportError:  # pragma: no cover
+        pass

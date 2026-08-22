@@ -3,7 +3,7 @@
 [![CI](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml/badge.svg)](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml)
 [![Publish](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml/badge.svg)](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml)
 
-`ashka` is an add-ons library for `reagento/dishka`.
+`ashka` extends `reagento/dishka` with application lifecycle support.
 
 ## Current Features
 
@@ -11,8 +11,7 @@
 	`@ashka.provide(scope=ashka.BOOTSTRAP)`, to register a dependency in the RUNTIME scope
 	and create it when the container is initialized. Both synchronous and
 	asynchronous containers can be initialized explicitly with `container.init()`
-	or automatically by entering the container context manager. The initialized
-	dependency is cached and reused for the lifetime of the container.
+	or automatically by entering the container context manager.
 - Each ashka integration provides a consistent `get_container` function. It
 	retrieves the container passed to `setup_dishka` from the integrated
 	framework application, router, broker, context, or other supported object.
