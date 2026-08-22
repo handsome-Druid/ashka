@@ -45,7 +45,7 @@ def provide(
         return _provide(source, scope=scope, **kwargs)
 
     def scoped(source: ProvideSource):  # pyright: ignore[reportUnknownParameterType]
-        bootstrap_sources.add(source)  # pyright: ignore[reportUnknownMemberType]
+        bootstrap_sources.add(getattr(source, "__func__", source))  # pyright: ignore[reportUnknownArgumentType, reportUnknownMemberType]
         return _provide(source, scope=Scope.RUNTIME, **kwargs)
 
     if source is not None:

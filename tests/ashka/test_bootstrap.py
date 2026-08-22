@@ -129,7 +129,10 @@ async def test_async_bootstrap(entrypoint: str):
 
 
 def test_bootstrap_provide_direct_call():
+    calls: list[str] = []
+
     def create_value() -> int:
+        calls.append("bootstrap")
         return 1
 
     class AppProvider(Provider):
@@ -137,6 +140,9 @@ def test_bootstrap_provide_direct_call():
 
     container = make_container(AppProvider())
     assert isinstance(container, Container)
+    assert calls == []
     container.init()
+    assert calls == ["bootstrap"]
     assert container.get(int) == 1
+    assert calls == ["bootstrap"]
     container.close()
