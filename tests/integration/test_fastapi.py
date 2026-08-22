@@ -1,18 +1,17 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import Protocol, runtime_checkable
 
-from ashka import BOOTSTRAP, provide  # pyright: ignore[reportUnknownVariableType]
+from ashka import (
+    BOOTSTRAP,
+    AsyncContainer,
+    make_async_container,
+    provide,  # pyright: ignore[reportUnknownVariableType]
+)
 from ashka.integrations.fastapi import get_container, setup_dishka
 
-from dishka import AsyncContainer, Provider, make_async_container
+from dishka import Provider
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-
-
-@runtime_checkable
-class Initializable(Protocol):
-    async def init(self) -> None: ...
 
 
 def test_fastapi_bootstrap_lifespan():
@@ -29,7 +28,6 @@ def test_fastapi_bootstrap_lifespan():
     async def lifespan(app: FastAPI):
         container = get_container(app)
         assert isinstance(container, AsyncContainer)
-        assert isinstance(container, Initializable)
         await container.init()
         yield
         await container.close()

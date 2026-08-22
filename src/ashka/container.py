@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 from ashka.entities.bootstrap import (
     bootstrap_keys_by_container,
@@ -6,36 +6,34 @@ from ashka.entities.bootstrap import (
 )
 
 import dishka
+from dishka import Container as DishkaContainer
 from dishka.provider import BaseProvider
 
-__all__ = ["make_container"]
+__all__ = ["Container", "make_container"]
+
+
+class Container(DishkaContainer):
+    __slots__ = ()
+
+    def __enter__(self):
+        enter = super().__enter__()
+
+        if self in bootstrap_keys_by_container:
+            for key in bootstrap_keys_by_container[self]:
+                self.get(key.type_hint, key.component)
+
+        return enter
+
+    def init(self) -> None:
+        self.__enter__()
+
+
+dishka.Container = dishka.container.Container = Container
 
 _make_container = dishka.make_container
 
-_enter = dishka.Container.__enter__
 
-
-def __enter__(self: dishka.Container):
-    enter = _enter(self)
-
-    if self in bootstrap_keys_by_container:
-        for key in bootstrap_keys_by_container[self]:
-            self.get(key.type_hint, key.component)
-
-    return enter
-
-
-dishka.Container.__enter__ = __enter__
-
-
-def init(self: dishka.Container):
-    self.__enter__()
-
-
-dishka.Container.init = init  # pyright: ignore[reportAttributeAccessIssue]
-
-
-def make_container(*providers: BaseProvider, **kwargs: Any) -> dishka.Container:
+def make_container(*providers: BaseProvider, **kwargs: Any) -> Container:
     bootstrap_keys_by_container[container := _make_container(*providers, **kwargs)] = [
         factory.provides.with_component(provider.component)
         for provider in providers
@@ -43,7 +41,7 @@ def make_container(*providers: BaseProvider, **kwargs: Any) -> dishka.Container:
         if getattr(factory.source, "__func__", factory.source) in bootstrap_sources
     ]
 
-    return container
+    return cast(Container, container)
 
 
 dishka.make_container = dishka.container.make_container = make_container

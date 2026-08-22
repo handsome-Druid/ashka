@@ -1,10 +1,16 @@
 from collections.abc import AsyncIterator, Iterator
-from typing import Protocol, runtime_checkable
 
-from ashka import BOOTSTRAP, provide  # pyright: ignore[reportUnknownVariableType]
+from ashka import (
+    BOOTSTRAP,
+    AsyncContainer,
+    Container,
+    make_async_container,
+    make_container,
+    provide,  # pyright: ignore[reportUnknownVariableType]
+)
 
 import pytest
-from dishka import Provider, Scope, make_async_container, make_container
+from dishka import Provider, Scope
 
 
 class SyncResource:
@@ -15,16 +21,6 @@ class SyncResource:
 class AsyncResource:
     def __init__(self):
         self.closed = False
-
-
-@runtime_checkable
-class Initializable(Protocol):
-    def init(self) -> None: ...
-
-
-@runtime_checkable
-class AsyncInitializable(Protocol):
-    async def init(self) -> None: ...
 
 
 @pytest.mark.parametrize("entrypoint", ["init", "context"])
@@ -51,6 +47,7 @@ def test_sync_bootstrap(entrypoint: str):
             return "request"
 
     container = make_container(AppProvider())
+    assert isinstance(container, Container)
     assert calls == []
 
     def assert_initialized():
@@ -59,6 +56,7 @@ def test_sync_bootstrap(entrypoint: str):
         assert calls == ["bootstrap"]
 
         with container(scope=Scope.REQUEST) as request_container:
+            assert isinstance(request_container, Container)
             assert request_container.get(str, component="app") == "request"
 
         assert calls == ["bootstrap"]
@@ -66,7 +64,6 @@ def test_sync_bootstrap(entrypoint: str):
         assert calls == ["bootstrap", "runtime"]
 
     if entrypoint == "init":
-        assert isinstance(container, Initializable)
         container.init()
         assert_initialized()
         container.close()
@@ -103,6 +100,7 @@ async def test_async_bootstrap(entrypoint: str):
             return "request"
 
     container = make_async_container(AppProvider())
+    assert isinstance(container, AsyncContainer)
     assert calls == []
 
     async def assert_initialized():
@@ -111,6 +109,7 @@ async def test_async_bootstrap(entrypoint: str):
         assert calls == ["bootstrap"]
 
         async with container(scope=Scope.REQUEST) as request_container:
+            assert isinstance(request_container, AsyncContainer)
             assert await request_container.get(str, component="app") == "request"
 
         assert calls == ["bootstrap"]
@@ -118,7 +117,6 @@ async def test_async_bootstrap(entrypoint: str):
         assert calls == ["bootstrap", "runtime"]
 
     if entrypoint == "init":
-        assert isinstance(container, AsyncInitializable)
         await container.init()
         await assert_initialized()
         await container.close()
@@ -138,7 +136,7 @@ def test_bootstrap_provide_direct_call():
         value = provide(staticmethod(create_value), scope=BOOTSTRAP)
 
     container = make_container(AppProvider())
-    assert isinstance(container, Initializable)
+    assert isinstance(container, Container)
     container.init()
     assert container.get(int) == 1
     container.close()
