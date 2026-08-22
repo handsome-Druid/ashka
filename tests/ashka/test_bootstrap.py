@@ -23,6 +23,67 @@ class AsyncResource:
         self.closed = False
 
 
+@pytest.mark.parametrize("scope", list(Scope))
+def test_sync_container_in_each_scope(scope: Scope):
+    injected_containers: list[Container] = []
+
+    class AppProvider(Provider):
+        @provide(scope=scope)
+        def value(self, container: Container) -> str:
+            injected_containers.append(container)
+            return scope.name
+
+    container = make_container(
+        AppProvider(),
+        start_scope=scope if scope in (Scope.RUNTIME, Scope.APP) else Scope.APP,
+    )
+
+    if scope in (Scope.RUNTIME, Scope.APP):
+        assert container.scope is scope
+        assert container.get(Container) is container
+        assert container.get(str) == scope.name
+        assert injected_containers == [container]
+    else:
+        with container(scope=scope) as scoped_container:
+            assert scoped_container.scope is scope
+            assert scoped_container.get(Container) is scoped_container
+            assert scoped_container.get(str) == scope.name
+            assert injected_containers == [scoped_container]
+
+    container.close()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("scope", list(Scope))
+async def test_async_container_in_each_scope(scope: Scope):
+    injected_containers: list[AsyncContainer] = []
+
+    class AppProvider(Provider):
+        @provide(scope=scope)
+        async def value(self, container: AsyncContainer) -> str:
+            injected_containers.append(container)
+            return scope.name
+
+    container = make_async_container(
+        AppProvider(),
+        start_scope=scope if scope in (Scope.RUNTIME, Scope.APP) else Scope.APP,
+    )
+
+    if scope in (Scope.RUNTIME, Scope.APP):
+        assert container.scope is scope
+        assert await container.get(AsyncContainer) is container
+        assert await container.get(str) == scope.name
+        assert injected_containers == [container]
+    else:
+        async with container(scope=scope) as scoped_container:
+            assert scoped_container.scope is scope
+            assert await scoped_container.get(AsyncContainer) is scoped_container
+            assert await scoped_container.get(str) == scope.name
+            assert injected_containers == [scoped_container]
+
+    await container.close()
+
+
 @pytest.mark.parametrize("entrypoint", ["init", "context"])
 def test_sync_bootstrap(entrypoint: str):
     calls: list[str] = []
