@@ -63,7 +63,7 @@ jobs:
 
       - name: Bump package version
         if: steps.changes.outputs.changed == 'true'
-        run: uv version --bump patch
+        run: uv version --bump patch --bump beta
 
       - name: Commit and push update
         if: steps.changes.outputs.changed == 'true'
