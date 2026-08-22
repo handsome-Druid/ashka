@@ -2,6 +2,9 @@ from functools import singledispatch
 
 from dishka import AsyncContainer, Container
 
+from ..async_container import AsyncContainerType
+from ..container import ContainerType
+
 
 @singledispatch
 def dishka_setup(
@@ -13,7 +16,7 @@ def dishka_setup(
 
 
 @singledispatch
-def get_container_(app: object) -> Container | AsyncContainer:
+def get_container_(app: object) -> ContainerType | AsyncContainerType:
     raise TypeError(
         f"Unsupported application type: {(app_type := type(app)).__module__}.{app_type.__qualname__}"
     )

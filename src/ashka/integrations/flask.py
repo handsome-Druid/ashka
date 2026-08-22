@@ -2,6 +2,7 @@ from importlib.util import find_spec
 
 from dishka import Container
 
+from ..container import ContainerType
 from ._dispatch import dishka_setup, get_container_
 
 if find_spec("flask"):
@@ -28,7 +29,7 @@ if find_spec("flask"):
         flask.setup_dishka = setup_dishka
 
         @get_container_.register(Flask)
-        def get_container(app: Flask) -> Container:
+        def get_container(app: Flask) -> ContainerType:
             return app.extensions["dishka_container"]
     except ImportError:  # pragma: no cover
         pass

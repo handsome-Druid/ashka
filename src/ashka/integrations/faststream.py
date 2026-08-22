@@ -6,6 +6,7 @@ from typing import Any
 
 from dishka import AsyncContainer
 
+from ..async_container import AsyncContainerType
 from ._dispatch import dishka_setup, get_container_
 
 if "dishka.integrations.faststream" in modules and getenv(
@@ -100,7 +101,7 @@ faststream.setup_dishka = faststream_.setup_dishka = setup_dishka
 @get_container_.register(BrokerType)  # pyright: ignore[reportUnknownArgumentType]
 def get_container(
     app_or_broker: "Application | ApplicationLike | BrokerType[Any, Any]",  # pyright: ignore[reportUnknownParameterType]
-) -> AsyncContainer:
+) -> AsyncContainerType:
     if hasattr(app_or_broker, "dishka_container"):  # pyright: ignore[reportUnknownArgumentType]
         return app_or_broker.dishka_container  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType, reportAttributeAccessIssue]
     return app_or_broker.broker.dishka_container  # pyright: ignore[reportUnknownVariableType, reportOptionalMemberAccess, reportUnknownMemberType, reportAttributeAccessIssue]

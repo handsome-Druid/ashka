@@ -1,7 +1,9 @@
 from importlib.util import find_spec
+from typing import cast
 
 from dishka import AsyncContainer
 
+from ..async_container import AsyncContainerType
 from ._dispatch import dishka_setup, get_container_
 
 if find_spec("aiohttp"):
@@ -20,7 +22,7 @@ if find_spec("aiohttp"):
         setup_dishka = aiohttp.setup_dishka
 
         @get_container_.register(Application)
-        def get_container(app: Application) -> AsyncContainer:
-            return app[aiohttp.DISHKA_CONTAINER_KEY]
+        def get_container(app: Application) -> AsyncContainerType:
+            return cast(AsyncContainerType, app[aiohttp.DISHKA_CONTAINER_KEY])
     except ImportError:  # pragma: no cover
         pass

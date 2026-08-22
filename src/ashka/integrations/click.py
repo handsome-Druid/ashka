@@ -2,6 +2,7 @@ from importlib.util import find_spec
 
 from dishka import Container
 
+from ..container import ContainerType
 from ._dispatch import dishka_setup, get_container_
 
 if find_spec("click"):
@@ -20,7 +21,7 @@ if find_spec("click"):
         setup_dishka = click.setup_dishka
 
         @get_container_.register(Context)
-        def get_container(context: Context) -> Container:
+        def get_container(context: Context) -> ContainerType:
             return context.meta[click.CONTAINER_NAME]
     except ImportError:  # pragma: no cover
         pass

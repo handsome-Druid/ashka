@@ -2,6 +2,7 @@ from importlib.util import find_spec
 
 from dishka import AsyncContainer
 
+from ..async_container import AsyncContainerType
 from ._dispatch import dishka_setup, get_container_
 
 if find_spec("aiogram"):
@@ -28,7 +29,7 @@ if find_spec("aiogram"):
         aiogram.setup_dishka = setup_dishka
 
         @get_container_.register(Router)
-        def get_container(router: Router) -> AsyncContainer:
+        def get_container(router: Router) -> AsyncContainerType:
             return router.dishka_container  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType, reportAttributeAccessIssue]
     except ImportError:  # pragma: no cover
         pass

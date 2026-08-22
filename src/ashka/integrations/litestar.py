@@ -2,6 +2,7 @@ from importlib.util import find_spec
 
 from dishka import AsyncContainer
 
+from ..async_container import AsyncContainerType
 from ._dispatch import dishka_setup, get_container_
 
 if find_spec("litestar"):
@@ -20,7 +21,7 @@ if find_spec("litestar"):
         setup_dishka = litestar.setup_dishka
 
         @get_container_.register(Litestar)
-        def get_container(app: Litestar) -> AsyncContainer:
+        def get_container(app: Litestar) -> AsyncContainerType:
             return app.state.dishka_container
     except ImportError:  # pragma: no cover
         pass

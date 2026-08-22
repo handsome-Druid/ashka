@@ -2,6 +2,7 @@ from importlib.util import find_spec
 
 from dishka import Container
 
+from ..container import ContainerType
 from ._dispatch import dishka_setup, get_container_
 
 if find_spec("celery"):
@@ -20,7 +21,7 @@ if find_spec("celery"):
         setup_dishka = celery.setup_dishka
 
         @get_container_.register(Celery)
-        def get_container(app: Celery) -> Container:
+        def get_container(app: Celery) -> ContainerType:
             return app.conf[celery.CONTAINER_NAME]  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType]
     except ImportError:  # pragma: no cover
         pass

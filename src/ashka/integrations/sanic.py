@@ -3,6 +3,7 @@ from typing import Any
 
 from dishka import AsyncContainer
 
+from ..async_container import AsyncContainerType
 from ._dispatch import dishka_setup, get_container_
 
 if find_spec("sanic"):
@@ -35,7 +36,7 @@ if find_spec("sanic"):
         sanic.setup_dishka = setup_dishka
 
         @get_container_.register(Sanic)
-        def get_container(app: Sanic[Any, Any]) -> AsyncContainer:
+        def get_container(app: Sanic[Any, Any]) -> AsyncContainerType:
             return app.ctx.dishka_container
     except ImportError:  # pragma: no cover
         pass
