@@ -2,6 +2,8 @@ from importlib.util import find_spec
 
 from dishka import Container
 
+from ._dispath import dishka_setup, get_container_
+
 if find_spec("flask"):
     from dishka.integrations import flask
     from flask import Flask
@@ -10,13 +12,18 @@ if find_spec("flask"):
 
     _setup_dishka = flask.setup_dishka
 
-    def setup_dishka(
-        container: Container, app: Flask, *args: object, **kwargs: object
-    ) -> None:
+    @dishka_setup.register(Flask)
+    def _dishka_setup(
+        app: Flask, container: Container, *args: object, **kwargs: object
+    ):
         _setup_dishka(container, app, *args, **kwargs)
         app.extensions["dishka_container"] = container
 
+    def setup_dishka(container: Container, app: Flask, *args: object, **kwargs: object):
+        _dishka_setup(app, container, *args, **kwargs)
+
     flask.setup_dishka = setup_dishka
 
+    @get_container_.register(Flask)
     def get_container(app: Flask) -> Container:
         return app.extensions["dishka_container"]

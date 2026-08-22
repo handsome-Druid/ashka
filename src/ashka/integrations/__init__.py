@@ -1,6 +1,3 @@
-from importlib import import_module
-from importlib.util import find_spec
-
 from dishka import AsyncContainer, Container
 
 from . import (
@@ -14,6 +11,8 @@ from . import (
     starlette,
     taskiq,
 )
+from ._dispath import dishka_setup
+from ._dispath import get_container_ as get_container
 
 __all__ = [
     "aiogram",
@@ -39,35 +38,5 @@ _all.remove("setup_dishka")
 def setup_dishka(
     container: Container | AsyncContainer, app: object, *args: object, **kwargs: object
 ) -> None:
-    if (module := type(app).__module__.split(".", 1)[0]) in _all:
-        import_module("ashka.integrations." + module).setup_dishka(
-            container, app, *args, **kwargs
-        )
-    else:
-        if find_spec("taskiq"):
-            from taskiq import AsyncBroker
 
-            if isinstance(app, AsyncBroker) and isinstance(container, AsyncContainer):
-                taskiq.setup_dishka(container, app)
-                return
-        raise TypeError(
-            f"Unsupported application type: {(app_type := type(app)).__module__}.{app_type.__qualname__}"
-        )
-
-
-def get_container(
-    app: object, *args: object, **kwargs: object
-) -> Container | AsyncContainer:
-    if (module := type(app).__module__.split(".", 1)[0]) in _all:
-        return import_module("ashka.integrations." + module).get_container(
-            app, *args, **kwargs
-        )
-    else:
-        if find_spec("taskiq"):
-            from taskiq import AsyncBroker
-
-            if isinstance(app, AsyncBroker):
-                return taskiq.get_container(app)
-        raise TypeError(
-            f"Unsupported application type: {(app_type := type(app)).__module__}.{app_type.__qualname__}"
-        )
+    dishka_setup(app, container, *args, **kwargs)
