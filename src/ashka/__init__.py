@@ -4,8 +4,6 @@ from sys import modules
 
 __all__ = [
     "BOOTSTRAP",
-    "AsyncContainer",
-    "Container",
     "make_async_container",
     "make_container",
     "provide",
@@ -22,13 +20,8 @@ if "dishka" in modules and getenv(
         f"Set the environment variable '{env}' to disable this warning"
     )
 
-from . import async_container as _async_container
-from . import container as _container
 from . import integrations as integrations
+from .async_container import make_async_container
+from .container import make_container
 from .entities.scope import BOOTSTRAP
 from .provider import provide  # pyright: ignore[reportUnknownVariableType]
-
-AsyncContainer = _async_container.AsyncContainer
-Container = _container.Container
-make_async_container = _async_container.make_async_container
-make_container = _container.make_container

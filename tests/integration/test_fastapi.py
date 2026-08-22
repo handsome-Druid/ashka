@@ -3,13 +3,12 @@ from contextlib import asynccontextmanager
 
 from ashka import (
     BOOTSTRAP,
-    AsyncContainer,
     make_async_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
 from ashka.integrations.fastapi import get_container, setup_dishka
 
-from dishka import Provider
+from dishka import AsyncContainer, Provider
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -26,8 +25,9 @@ def test_fastapi_bootstrap_lifespan():
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        container = get_container(app)
-        assert isinstance(container, AsyncContainer)
+        app_container = get_container(app)
+        assert isinstance(app_container, AsyncContainer)
+        assert app_container is container
         await container.init()
         yield
         await container.close()

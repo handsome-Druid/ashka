@@ -2,15 +2,15 @@ from collections.abc import AsyncIterator, Iterator
 
 from ashka import (
     BOOTSTRAP,
-    AsyncContainer,
-    Container,
     make_async_container,
     make_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+from ashka.async_container import AsyncContainerType
+from ashka.container import ContainerType
 
 import pytest
-from dishka import Provider, Scope
+from dishka import AsyncContainer, Container, Provider, Scope
 
 
 class SyncResource:
@@ -26,6 +26,7 @@ class AsyncResource:
 @pytest.mark.parametrize("entrypoint", ["init", "context"])
 def test_sync_bootstrap(entrypoint: str):
     calls: list[str] = []
+    injected_containers: list[Container] = []
     resource = SyncResource()
 
     class AppProvider(Provider):
@@ -43,21 +44,25 @@ def test_sync_bootstrap(entrypoint: str):
             return 1
 
         @provide(scope=Scope.REQUEST)
-        def request_value(self) -> str:
+        def request_value(self, container: Container) -> str:
+            injected_containers.append(container)
             return "request"
 
-    container = make_container(AppProvider())
+    container: ContainerType = make_container(AppProvider())
     assert isinstance(container, Container)
     assert calls == []
 
     def assert_initialized():
         assert calls == ["bootstrap"]
+        assert container.get(Container) is container
         assert container.get(SyncResource, component="app") is resource
         assert calls == ["bootstrap"]
 
         with container(scope=Scope.REQUEST) as request_container:
             assert isinstance(request_container, Container)
+            assert request_container.get(Container) is request_container
             assert request_container.get(str, component="app") == "request"
+            assert injected_containers == [request_container]
 
         assert calls == ["bootstrap"]
         assert container.get(int, component="app") == 1
@@ -79,6 +84,7 @@ def test_sync_bootstrap(entrypoint: str):
 @pytest.mark.parametrize("entrypoint", ["init", "context"])
 async def test_async_bootstrap(entrypoint: str):
     calls: list[str] = []
+    injected_containers: list[AsyncContainer] = []
     resource = AsyncResource()
 
     class AppProvider(Provider):
@@ -96,21 +102,25 @@ async def test_async_bootstrap(entrypoint: str):
             return 1
 
         @provide(scope=Scope.REQUEST)
-        async def request_value(self) -> str:
+        async def request_value(self, container: AsyncContainer) -> str:
+            injected_containers.append(container)
             return "request"
 
-    container = make_async_container(AppProvider())
+    container: AsyncContainerType = make_async_container(AppProvider())
     assert isinstance(container, AsyncContainer)
     assert calls == []
 
     async def assert_initialized():
         assert calls == ["bootstrap"]
+        assert await container.get(AsyncContainer) is container
         assert await container.get(AsyncResource, component="app") is resource
         assert calls == ["bootstrap"]
 
         async with container(scope=Scope.REQUEST) as request_container:
             assert isinstance(request_container, AsyncContainer)
+            assert await request_container.get(AsyncContainer) is request_container
             assert await request_container.get(str, component="app") == "request"
+            assert injected_containers == [request_container]
 
         assert calls == ["bootstrap"]
         assert await container.get(int, component="app") == 1

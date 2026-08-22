@@ -7,38 +7,44 @@ from ashka.entities.bootstrap import (
 )
 
 import dishka
-from dishka import AsyncContainer as DishkaAsyncContainer
+from dishka import AsyncContainer
 from dishka.provider import BaseProvider
 
-__all__ = ["AsyncContainer", "make_async_container"]
+__all__ = ["make_async_container"]
+
+_aenter = AsyncContainer.__aenter__
 
 
-class AsyncContainer(DishkaAsyncContainer):
+async def __aenter__(self: AsyncContainer):
+    aenter = await _aenter(self)
+
+    if self in bootstrap_keys_by_container:
+        await gather(
+            *(
+                self.get(key.type_hint, key.component)
+                for key in bootstrap_keys_by_container[self]
+            )
+        )
+
+    return aenter
+
+
+class AsyncContainerType(AsyncContainer):
     __slots__ = ()
 
-    async def __aenter__(self):
-        aenter = await super().__aenter__()
-
-        if self in bootstrap_keys_by_container:
-            await gather(
-                *(
-                    self.get(key.type_hint, key.component)
-                    for key in bootstrap_keys_by_container[self]
-                )
-            )
-
-        return aenter
+    __aenter__ = __aenter__
 
     async def init(self) -> None:
         await self.__aenter__()
 
 
-dishka.AsyncContainer = dishka.async_container.AsyncContainer = AsyncContainer
+AsyncContainer.__aenter__ = __aenter__
+AsyncContainer.init = AsyncContainerType.init  # pyright: ignore[reportAttributeAccessIssue]
 
 _make_async_container = dishka.make_async_container
 
 
-def make_async_container(*providers: BaseProvider, **kwargs: Any) -> AsyncContainer:
+def make_async_container(*providers: BaseProvider, **kwargs: Any) -> AsyncContainerType:
     bootstrap_keys_by_container[
         async_container := _make_async_container(*providers, **kwargs)
     ] = [
@@ -48,7 +54,7 @@ def make_async_container(*providers: BaseProvider, **kwargs: Any) -> AsyncContai
         if getattr(factory.source, "__func__", factory.source) in bootstrap_sources
     ]
 
-    return cast(AsyncContainer, async_container)
+    return cast(AsyncContainerType, async_container)
 
 
 dishka.make_async_container = dishka.async_container.make_async_container = (
