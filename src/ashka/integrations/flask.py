@@ -2,7 +2,7 @@ from importlib.util import find_spec
 
 from dishka import Container
 
-from ._dispath import dishka_setup, get_container_
+from ._dispatch import dishka_setup, get_container_
 
 if find_spec("flask"):
     from dishka.integrations import flask

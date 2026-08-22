@@ -237,16 +237,15 @@ wheels = [
 
 [[package]]
 name = "ashka"
-version = "0.5.1"
+version = "0.5.2"
 source = { editable = "." }
 dependencies = [
-    { name = "aiogram" },
     { name = "dishka" },
-    { name = "taskiq" },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "aiogram" },
     { name = "aiohttp" },
     { name = "celery" },
     { name = "fastapi" },
@@ -259,17 +258,15 @@ dev = [
     { name = "pytest-xdist" },
     { name = "ruff" },
     { name = "sanic" },
+    { name = "taskiq" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "aiogram", specifier = ">=3.30.0" },
-    { name = "dishka", specifier = "<=1.10.1,>=1.10.1" },
-    { name = "taskiq", specifier = ">=0.12.5" },
-]
+requires-dist = [{ name = "dishka", specifier = "<=1.10.1,>=1.10.1" }]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "aiogram", specifier = ">=3.30.0" },
     { name = "aiohttp", specifier = ">=3.14.3" },
     { name = "celery", specifier = ">=5.6.3" },
     { name = "fastapi", specifier = ">=0.141.1" },
@@ -282,6 +279,7 @@ dev = [
     { name = "pytest-xdist", specifier = ">=3.8.0" },
     { name = "ruff", specifier = ">=0.16.4" },
     { name = "sanic", specifier = ">=25.12.1" },
+    { name = "taskiq", specifier = ">=0.12.5" },
 ]
 
 [[package]]

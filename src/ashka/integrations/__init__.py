@@ -11,8 +11,8 @@ from . import (
     starlette,
     taskiq,
 )
-from ._dispath import dishka_setup
-from ._dispath import get_container_ as get_container
+from ._dispatch import dishka_setup
+from ._dispatch import get_container_ as get_container
 
 __all__ = [
     "aiogram",
