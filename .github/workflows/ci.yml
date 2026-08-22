@@ -128,6 +128,9 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Pin Python version
+        run: uv python pin "${{ matrix.python-version }}"
+
       - name: Install dependencies
         run: uv sync --dev
 
@@ -209,6 +212,9 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
+
+      - name: Pin Python version
+        run: uv python pin "${{ matrix.python-version }}"
 
       - name: Verify production environment
         run: uv run --no-dev --with "dishka==${{ matrix.dishka-version }}" python -c "import ashka"
