@@ -45,6 +45,7 @@ explicit = true
 
 [tool.coverage.run]
 branch = true
+omit = ["src/ashka/integrations/faststream.py"]
 patch = ["subprocess"]
 
 [tool.coverage.report]
