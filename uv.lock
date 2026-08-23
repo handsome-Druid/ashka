@@ -250,7 +250,7 @@ wheels = [
 
 [[package]]
 name = "ashka"
-version = "0.7.0b10"
+version = "0.7.0b11"
 source = { editable = "." }
 dependencies = [
     { name = "dishka" },

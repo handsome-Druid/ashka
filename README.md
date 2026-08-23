@@ -7,8 +7,8 @@
 
 ## Documentation
 
-- [English](docs/en/README.md)
-- [中文](docs/zh/README.md)
+- [English](https://github.com/handsome-Druid/ashka/blob/master/docs/en/README.md)
+- [中文](https://github.com/handsome-Druid/ashka/blob/master/docs/zh/README.md)
 
 ## Current Features
 
@@ -33,4 +33,4 @@
 - `dishka.**.make_async_container` -> `ashka.**.make_async_container`
 - `dishka.integrations.*.setup_dishka` -> `ashka.integrations.*.setup_dishka`
 
-See [FastStream support](docs/en/support/faststream.md) for its support status and manual opt-in.
+See [FastStream support](https://github.com/handsome-Druid/ashka/blob/master/docs/en/support/faststream.md) for its support status and manual opt-in.
