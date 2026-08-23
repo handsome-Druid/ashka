@@ -5,11 +5,11 @@ registered with `AshkaScope.BOOTSTRAP` use dishka's `Scope.APP` lifetime,
 but are resolved eagerly when the root container is initialized.
 
 In dishka's scope hierarchy, `Scope.RUNTIME` is the outer scope of
-`Scope.APP`, while `Scope.APP` is its inner scope. An APP provider can
-therefore depend on a runtime provider, but a runtime provider cannot depend on
-an APP provider. `AshkaScope.BOOTSTRAP` is not a new dishka scope; it is an
+`Scope.APP`, while `Scope.APP` is its inner scope. A `Scope.APP` factory can
+therefore depend on a `Scope.RUNTIME` factory, but the reverse dependency is
+not allowed. `AshkaScope.BOOTSTRAP` is not a new dishka scope; it is an
 ashka marker for eager resolution. ashka converts it to `Scope.APP`, so a
-bootstrap provider follows APP scope's dependency, caching, and shutdown
+bootstrap factory follows APP scope's dependency, caching, and shutdown
 behavior.
 
 ## Registering Bootstrap Dependencies
@@ -128,12 +128,12 @@ async with make_async_container(ApplicationProvider()) as container:
 
 ## Bootstrap and Regular Scopes
 
-Only providers declared with `AshkaScope.BOOTSTRAP` are resolved eagerly during
-initialization. Providers declared directly with `Scope.APP` or
-`Scope.RUNTIME` are not triggered automatically. In other words, the scope
-determines the dependency layer and cache lifetime, while
-`AshkaScope.BOOTSTRAP` determines whether the provider is resolved during
-initialization:
+Only factories registered with `AshkaScope.BOOTSTRAP` are resolved eagerly during
+initialization. Factories registered directly with `Scope.APP` or
+`Scope.RUNTIME` are not triggered automatically. `Scope.APP` and
+`Scope.RUNTIME` are the regular factory scopes. When a factory is registered
+with `AshkaScope.BOOTSTRAP`, ashka converts it to `Scope.APP` and resolves it
+eagerly during initialization:
 
 ```python
 from dishka import Scope
@@ -153,11 +153,11 @@ class ApplicationProvider(Provider):
         return Metrics()
 ```
 
-Neither `cache` nor `metrics` is created by `container.init()` in this example;
+Neither the `cache` nor `metrics` factory is invoked by `container.init()` in this example;
 each is created only when `container.get(Cache)` or `container.get(Metrics)` is
-called for the first time. Only a provider declared with
+called for the first time. Only a factory registered with
 `AshkaScope.BOOTSTRAP` is triggered automatically by `container.init()` or by
-entering the root container. That provider uses `Scope.APP` lifetime and stays
+entering the root container. That factory uses `Scope.APP` lifetime and stays
 cached in the APP scope.
 
 ## Container Compatibility
