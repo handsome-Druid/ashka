@@ -24,11 +24,9 @@ from dishka import Provider
 
 
 class Database:
-    def connect(self) -> None:
-        ...
+    def connect(self) -> None: ...
 
-    def close(self) -> None:
-        ...
+    def close(self) -> None: ...
 
 
 class ApplicationProvider(Provider):
@@ -51,8 +49,7 @@ return value must explicitly declare `-> None`:
 ```python
 class ApplicationProvider(Provider):
     @provide(scope=AshkaScope.BOOTSTRAP)
-    async def initialize(self) -> None:
-        ...
+    async def initialize(self) -> None: ...
 ```
 
 For a factory that provides another type, use the `provides` parameter to set

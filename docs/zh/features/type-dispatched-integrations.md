@@ -65,8 +65,12 @@ class Application(FastAPI):
 app = Application()
 container = ashka.make_async_container(ApplicationProvider())
 
-ashka.integrations.setup_dishka(container, app)  # 相当于 ashka.integrations.fastapi.setup_dishka(container, app)
-container = ashka.integrations.get_container(app)  # 相当于 ashka.integrations.fastapi.get_container(app)
+ashka.integrations.setup_dishka(
+    container, app
+)  # 相当于 ashka.integrations.fastapi.setup_dishka(container, app)
+container = ashka.integrations.get_container(
+    app
+)  # 相当于 ashka.integrations.fastapi.get_container(app)
 ```
 
 项目可以使用自定义应用子类，无需增加第二个分派注册。

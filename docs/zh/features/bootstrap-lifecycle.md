@@ -22,11 +22,9 @@ from dishka import Provider
 
 
 class Database:
-    def connect(self) -> None:
-        ...
+    def connect(self) -> None: ...
 
-    def close(self) -> None:
-        ...
+    def close(self) -> None: ...
 
 
 class ApplicationProvider(Provider):
@@ -48,8 +46,7 @@ factory 提供的依赖类型。因此，即使 bootstrap factory 只执行初�
 ```python
 class ApplicationProvider(Provider):
     @provide(scope=AshkaScope.BOOTSTRAP)
-    async def initialize(self) -> None:
-        ...
+    async def initialize(self) -> None: ...
 ```
 
 如果 factory 提供的是其他类型，也可以使用 `provides` 参数显式指定类型。

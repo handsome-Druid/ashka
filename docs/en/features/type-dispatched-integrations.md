@@ -71,8 +71,12 @@ class Application(FastAPI):
 app = Application()
 container = ashka.make_async_container(ApplicationProvider())
 
-ashka.integrations.setup_dishka(container, app)  # Equivalent to ashka.integrations.fastapi.setup_dishka(container, app)
-container = ashka.integrations.get_container(app)  # Equivalent to ashka.integrations.fastapi.get_container(app)
+ashka.integrations.setup_dishka(
+    container, app
+)  # Equivalent to ashka.integrations.fastapi.setup_dishka(container, app)
+container = ashka.integrations.get_container(
+    app
+)  # Equivalent to ashka.integrations.fastapi.get_container(app)
 ```
 
 This allows projects to use their own application subclasses without adding a
