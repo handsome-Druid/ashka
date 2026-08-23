@@ -18,6 +18,14 @@ order, ashka automatically replaces or extends the corresponding dishka APIs:
 Prefer importing these APIs from `ashka` to avoid cases where the monkey patch
 has not taken effect and to receive the correct return types.
 
+These monkey patches keep the API paths consistent with upstream dishka and
+reduce the cognitive load during migration. They exist for legacy-project
+compatibility: importing `ashka` first lets an existing project keep its
+current dishka imports without immediate code changes. This is a migration aid,
+not a stable long-term usage pattern; migrate imports from dishka to ashka
+incrementally when convenient instead of relying on the monkey patches
+indefinitely.
+
 FastStream is not enabled by importing `ashka`. Explicitly importing
 `ashka.integrations.faststream` patches
 `dishka.integrations.faststream.setup_dishka` and its version-specific

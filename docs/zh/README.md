@@ -18,6 +18,11 @@
 建议优先从 `ashka` 导入这些接口，以避免 monkey patch 未生效，并获得正确的
 返回类型。
 
+这些 monkey patch 保持了与上游 dishka 一致的接口路径，可以降低迁移时的认知负担。
+之所以保留这种方式，是为了兼容旧项目：只需优先导入 `ashka`，旧项目就不必立即
+修改原有的 dishka 导入。这是一种迁移辅助机制，不是稳定的长期用法；有空时应逐步
+将接口从 dishka 手动切换到 ashka，而不是长期依赖 monkey patch。
+
 导入 `ashka` 不会启用 FastStream。显式导入
 `ashka.integrations.faststream` 后，才会替换
 `dishka.integrations.faststream.setup_dishka` 及其对应版本的实现。

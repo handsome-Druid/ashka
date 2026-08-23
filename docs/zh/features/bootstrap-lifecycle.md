@@ -153,6 +153,11 @@ class ApplicationProvider(Provider):
 这些 dishka API 的引用。先导入 dishka 会产生警告，因为此前保存的引用可能绕过
 ashka 的行为。
 
+这些 monkey patch 保持了与上游 dishka 一致的接口路径，可以降低迁移时的认知负担。
+它们用于兼容旧项目：只需优先导入 `ashka`，旧项目就不必立即修改原有的 dishka
+导入。这是一种迁移辅助机制，不是稳定的长期用法；有空时应逐步将接口从 dishka
+手动切换到 ashka，而不是长期依赖 monkey patch。
+
 `ContainerType` 和 `AsyncContainerType` 用于向静态类型检查器描述 ashka 增加的
 方法。工厂返回的是经过修补的 dishka 容器实例，而不是这些门面类的实例，因此
 不要使用 `isinstance(container, ContainerType)` 或

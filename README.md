@@ -33,4 +33,11 @@
 - `dishka.**.make_async_container` -> `ashka.**.make_async_container`
 - `dishka.integrations.*.setup_dishka` -> `ashka.integrations.*.setup_dishka`
 
+These monkey patches keep the API paths consistent with upstream dishka and
+reduce the cognitive load during migration. Import `ashka` before importing
+these dishka APIs so existing projects can keep their current imports without
+immediate code changes. This is a migration aid rather than a stable usage
+pattern; migrate imports from dishka to ashka incrementally when convenient
+instead of relying on the monkey patches indefinitely.
+
 See [FastStream support](https://github.com/handsome-Druid/ashka/blob/master/docs/en/support/faststream.md) for its support status and manual opt-in.

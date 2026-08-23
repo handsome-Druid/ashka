@@ -168,6 +168,14 @@ importing or storing references to those dishka APIs. Importing dishka first
 emits a warning because previously stored references may bypass ashka's
 behavior.
 
+These monkey patches keep the API paths consistent with upstream dishka and
+reduce the cognitive load during migration. They exist for legacy-project
+compatibility: importing `ashka` first lets an existing project keep its
+current dishka imports without immediate code changes. This is a migration aid,
+not a stable long-term usage pattern; migrate imports from dishka to ashka
+incrementally when convenient instead of relying on the monkey patches
+indefinitely.
+
 `ContainerType` and `AsyncContainerType` describe the additional ashka methods
 for static type checkers. The factories return patched dishka container
 instances rather than instances of these facade classes, so do not use
