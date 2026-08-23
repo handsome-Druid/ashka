@@ -4,6 +4,14 @@
 registered with `AshkaScope.BOOTSTRAP` use dishka's `Scope.APP` lifetime,
 but are resolved eagerly when the root container is initialized.
 
+In dishka's scope hierarchy, `Scope.RUNTIME` is the outer scope of
+`Scope.APP`, while `Scope.APP` is its inner scope. An APP provider can
+therefore depend on a runtime provider, but a runtime provider cannot depend on
+an APP provider. `AshkaScope.BOOTSTRAP` is not a new dishka scope; it is an
+ashka marker for eager resolution. ashka converts it to `Scope.APP`, so a
+bootstrap provider follows APP scope's dependency, caching, and shutdown
+behavior.
+
 ## Registering Bootstrap Dependencies
 
 Use `ashka.provide` with `AshkaScope.BOOTSTRAP`:
@@ -118,11 +126,14 @@ async with make_async_container(ApplicationProvider()) as container:
     ...
 ```
 
-## Runtime Dependencies
+## Bootstrap and Regular Scopes
 
-Only providers declared with `AshkaScope.BOOTSTRAP` are resolved during
-initialization. Regular `Scope.RUNTIME` providers remain lazy and are created
-when first requested:
+Only providers declared with `AshkaScope.BOOTSTRAP` are resolved eagerly during
+initialization. Providers declared directly with `Scope.APP` or
+`Scope.RUNTIME` are not triggered automatically. In other words, the scope
+determines the dependency layer and cache lifetime, while
+`AshkaScope.BOOTSTRAP` determines whether the provider is resolved during
+initialization:
 
 ```python
 from dishka import Scope
@@ -133,13 +144,21 @@ class ApplicationProvider(Provider):
     def database(self) -> Database:
         return Database()
 
+    @provide(scope=Scope.APP)
+    def cache(self) -> Cache:
+        return Cache()
+
     @provide(scope=Scope.RUNTIME)
     def metrics(self) -> Metrics:
         return Metrics()
 ```
 
-After `container.init()`, `Database` is available from the app cache while
-`Metrics` is still created on its first `container.get(Metrics)` call.
+Neither `cache` nor `metrics` is created by `container.init()` in this example;
+each is created only when `container.get(Cache)` or `container.get(Metrics)` is
+called for the first time. Only a provider declared with
+`AshkaScope.BOOTSTRAP` is triggered automatically by `container.init()` or by
+entering the root container. That provider uses `Scope.APP` lifetime and stays
+cached in the APP scope.
 
 ## Container Compatibility
 

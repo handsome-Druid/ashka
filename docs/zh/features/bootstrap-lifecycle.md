@@ -4,6 +4,12 @@
 注册的依赖具有 dishka `Scope.APP` 的生命周期，但会在根容器初始化时
 被主动解析。
 
+在 dishka 的 scope 层级中，`Scope.RUNTIME` 是 `Scope.APP` 的外层，
+`Scope.APP` 位于它的内层。因此 APP provider 可以依赖 runtime provider，
+但 runtime provider 不能依赖 APP provider。`AshkaScope.BOOTSTRAP` 不是 dishka
+新增的 scope，而是 ashka 的主动解析标记；ashka 会将它转换为 `Scope.APP`，
+所以 bootstrap provider 遵循 APP scope 的依赖、缓存和关闭行为。
+
 ## 注册 Bootstrap 依赖
 
 将 `AshkaScope.BOOTSTRAP` 传给 `ashka.provide`：
@@ -109,10 +115,12 @@ async with make_async_container(ApplicationProvider()) as container:
     ...
 ```
 
-## Runtime 依赖
+## Bootstrap 与普通 Scope
 
-初始化期间只会解析使用 `AshkaScope.BOOTSTRAP` 声明的 provider。普通的
-`Scope.RUNTIME` provider 仍采用惰性创建，只会在首次请求时创建：
+初始化期间只会主动解析使用 `AshkaScope.BOOTSTRAP` 声明的 provider。直接使用
+`Scope.APP` 或 `Scope.RUNTIME` 注册的 provider 都不会自动触发。换句话说，
+scope 决定依赖所在的层级和缓存范围，`AshkaScope.BOOTSTRAP` 才决定是否在
+初始化时主动解析：
 
 ```python
 from dishka import Scope
@@ -123,13 +131,19 @@ class ApplicationProvider(Provider):
     def database(self) -> Database:
         return Database()
 
+    @provide(scope=Scope.APP)
+    def cache(self) -> Cache:
+        return Cache()
+
     @provide(scope=Scope.RUNTIME)
     def metrics(self) -> Metrics:
         return Metrics()
 ```
 
-执行 `container.init()` 后，`Database` 已存在于 app 缓存中，而 `Metrics`
-仍会等到第一次调用 `container.get(Metrics)` 时才创建。
+上例中的 `cache` 和 `metrics` 都不会因为执行 `container.init()` 而创建，只有首次
+调用 `container.get(Cache)` 或 `container.get(Metrics)` 时才会创建。只有将 provider
+声明为 `AshkaScope.BOOTSTRAP`，对应依赖才会在 `container.init()` 或进入根容器时
+自动触发；该 provider 实际使用 `Scope.APP` 生命周期，并在 APP 缓存中保持。
 
 ## 容器兼容性
 
