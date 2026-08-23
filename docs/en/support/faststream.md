@@ -8,6 +8,9 @@
 
 FastStream support is not enabled during `ashka` initialization.
 
+It is also excluded from the project's regular coverage target and is not
+registered by the central `ashka.integrations` import.
+
 ## Upstream Deprecation
 
 The upstream `dishka.integrations.faststream` interface is deprecated and has
@@ -20,6 +23,10 @@ and 0.7 use different internal APIs, while optional integrations such as
 `StreamRouter` depend on compatible FastStream and FastAPI versions. Official
 support therefore requires a test matrix covering the supported combinations,
 which is not currently available in this project.
+
+The current implementation depends on private FastStream APIs. Those APIs can
+change without a compatibility period, including between minor FastStream
+releases.
 
 Contributions providing the required version-specific tests are welcome. Once
 the supported combinations are fully covered, FastStream can be included in the
