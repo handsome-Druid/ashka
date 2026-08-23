@@ -41,6 +41,19 @@ class ApplicationProvider(Provider):
 container = make_container(ApplicationProvider())
 ```
 
+dishka 创建 provide factory 时，必须通过返回类型或 `provides` 参数确定
+factory 提供的依赖类型。因此，即使 bootstrap factory 只执行初始化操作、没有
+有意义的返回值，也必须显式标注 `-> None`：
+
+```python
+class ApplicationProvider(Provider):
+    @provide(scope=AshkaScope.BOOTSTRAP)
+    async def initialize(self) -> None:
+        ...
+```
+
+如果 factory 提供的是其他类型，也可以使用 `provides` 参数显式指定类型。
+
 不要把原生 dishka `Provider` 的 `scope` 属性直接设置为
 `AshkaScope.BOOTSTRAP`。不允许这种用法，目前也没有支持该用法的计划。
 

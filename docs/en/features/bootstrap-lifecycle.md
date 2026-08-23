@@ -43,6 +43,21 @@ class ApplicationProvider(Provider):
 container = make_container(ApplicationProvider())
 ```
 
+When dishka creates a provide factory, the factory's provided type must be
+determined by its return annotation or the `provides` parameter. Therefore,
+even a bootstrap factory that only performs initialization and has no meaningful
+return value must explicitly declare `-> None`:
+
+```python
+class ApplicationProvider(Provider):
+    @provide(scope=AshkaScope.BOOTSTRAP)
+    async def initialize(self) -> None:
+        ...
+```
+
+For a factory that provides another type, use the `provides` parameter to set
+the type explicitly instead.
+
 Do not set the `scope` attribute of a native dishka `Provider` directly to
 `AshkaScope.BOOTSTRAP`. This usage is not allowed and is not currently planned
 to be supported.
