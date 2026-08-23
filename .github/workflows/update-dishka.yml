@@ -30,11 +30,33 @@ jobs:
       - name: Get latest dishka version
         id: dishka
         run: |
-          latest=$(uv run --with packaging python -c '
+          uv run --with packaging python -c '
           import json
+          import os
+          import tomllib
           from urllib.request import urlopen
           from packaging.version import Version
+          from packaging.specifiers import SpecifierSet
 
+          with open("pyproject.toml", "rb") as file:
+            project = tomllib.load(file)
+
+          requirement = next(
+            dependency
+            for dependency in project["project"]["dependencies"]
+            if dependency.startswith("dishka")
+          )
+          specifiers = SpecifierSet(requirement.partition("dishka")[2])
+          lower = next(
+            specifier.version
+            for specifier in specifiers
+            if specifier.operator in {">", ">="}
+          )
+          current = next(
+            specifier.version
+            for specifier in specifiers
+            if specifier.operator in {"<", "<="}
+          )
           with urlopen("https://pypi.org/pypi/dishka/json") as response:
               releases = json.load(response)["releases"]
 
@@ -45,37 +67,34 @@ jobs:
               and not Version(version).is_prerelease
               and not all(file["yanked"] for file in files)
           ]
-          print(max(versions))
-          ')
-          echo "version=$latest" >> "$GITHUB_OUTPUT"
+          latest = max(versions)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"lower={lower}\n")
+              output.write(f"current={current}\n")
+              output.write(f"latest={latest}\n")
+              output.write(f"changed={str(latest > Version(current)).lower()}\n")
+          '
 
       - name: Update dishka requirement
-        run: uv add "dishka>=1.10.1,<=${{ steps.dishka.outputs.version }}"
-
-      - name: Check for changes
-        id: changes
-        run: |
-          if git diff --quiet; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
+        if: steps.dishka.outputs.changed == 'true'
+        run: uv add "dishka>=${{ steps.dishka.outputs.lower }},<=${{ steps.dishka.outputs.latest }}"
 
       - name: Bump package version
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.dishka.outputs.changed == 'true'
         run: uv version --bump patch --bump beta
 
       - name: Commit and push update
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.dishka.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add pyproject.toml uv.lock
-          git commit -m "Update dishka to ${{ steps.dishka.outputs.version }}"
+          git commit -m "Update dishka to ${{ steps.dishka.outputs.latest }}"
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
       - name: Run CI
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.dishka.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -93,7 +112,7 @@ jobs:
           gh run watch "$run_id" --exit-status
 
       - name: Tag and publish release
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.dishka.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
