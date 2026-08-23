@@ -1,6 +1,6 @@
 [project]
 name = "ashka"
-version = "0.7.0b7"
+version = "0.7.0b8"
 description = "Addons for dishka"
 readme = "README.md"
 authors = [
