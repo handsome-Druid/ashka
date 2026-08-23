@@ -7,7 +7,7 @@ from ._dispatch import dishka_setup, get_container_
 
 if find_spec("celery"):
     try:
-        from celery import Celery
+        from celery import Celery # pyright: ignore[reportMissingTypeStubs]
         from dishka.integrations import celery
 
         __all__ = ["get_container", "setup_dishka"]
