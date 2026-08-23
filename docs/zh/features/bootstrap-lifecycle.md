@@ -69,6 +69,16 @@ container.init()
 container.close()
 ```
 
+如果测试需要持续创建多个 container，并且希望在关闭后清理 ashka 对 container
+的引用，可以从 `ashka.entities.bootstrap.bootstrap_keys_by_container` 取出字典，
+然后删除对应的键：
+
+```python
+from ashka.entities.bootstrap import bootstrap_keys_by_container
+
+bootstrap_keys_by_container.pop(container, None)
+```
+
 异步版本使用 `make_async_container`，并等待两个生命周期操作：
 
 ```python

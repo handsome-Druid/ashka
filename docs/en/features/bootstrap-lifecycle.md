@@ -77,6 +77,17 @@ container.init()
 container.close()
 ```
 
+If a test repeatedly creates containers and should also remove ashka's reference
+to a container after closing it, import
+`ashka.entities.bootstrap.bootstrap_keys_by_container` and remove the
+corresponding key:
+
+```python
+from ashka.entities.bootstrap import bootstrap_keys_by_container
+
+bootstrap_keys_by_container.pop(container, None)
+```
+
 The asynchronous equivalent uses `make_async_container` and awaits both
 lifecycle operations:
 
