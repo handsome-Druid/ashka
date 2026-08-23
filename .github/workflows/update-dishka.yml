@@ -30,16 +30,16 @@ jobs:
       - name: Get latest dishka version
         id: dishka
         run: |
-          uv run --with packaging python -c '
+          uv run --with packaging --with tomli python -c '
           import json
           import os
-          import tomllib
+          from pathlib import Path
           from urllib.request import urlopen
+          import tomli
           from packaging.version import Version
           from packaging.specifiers import SpecifierSet
 
-          with open("pyproject.toml", "rb") as file:
-            project = tomllib.load(file)
+          project = tomli.loads(Path("pyproject.toml").read_text())
 
           requirement = next(
             dependency
