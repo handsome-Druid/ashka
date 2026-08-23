@@ -1,7 +1,7 @@
 # Bootstrap Lifecycle
 
 `ashka` adds an application bootstrap phase to dishka containers. Dependencies
-registered with `AshkaScope.BOOTSTRAP` retain dishka's `Scope.RUNTIME` lifetime,
+registered with `AshkaScope.BOOTSTRAP` use dishka's `Scope.APP` lifetime,
 but are resolved eagerly when the root container is initialized.
 
 ## Registering Bootstrap Dependencies
@@ -35,11 +35,15 @@ class ApplicationProvider(Provider):
 container = make_container(ApplicationProvider())
 ```
 
+Do not set the `scope` attribute of a native dishka `Provider` directly to
+`AshkaScope.BOOTSTRAP`. This usage is not allowed and is not currently planned
+to be supported.
+
 `make_container()` only registers bootstrap dependencies when it creates the
 container. It does not run ashka's lifecycle `container.init()` or resolve
 those dependencies. The user must explicitly call `container.init()` or
 explicitly enter the container context to initialize the database. Once
-initialized, the database remains cached for the runtime lifetime of that
+initialized, the database remains cached for the app lifetime of that
 container.
 
 ## Explicit Initialization
@@ -134,7 +138,7 @@ class ApplicationProvider(Provider):
         return Metrics()
 ```
 
-After `container.init()`, `Database` is available from the runtime cache while
+After `container.init()`, `Database` is available from the app cache while
 `Metrics` is still created on its first `container.get(Metrics)` call.
 
 ## Container Compatibility

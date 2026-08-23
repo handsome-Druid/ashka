@@ -13,7 +13,7 @@
 ## Current Features
 
 - Pass `AshkaScope.BOOTSTRAP` to the `scope` parameter of `ashka.provide`, for example
-	`@ashka.provide(scope=ashka.AshkaScope.BOOTSTRAP)`, to register a dependency in the RUNTIME scope
+	`@ashka.provide(scope=ashka.AshkaScope.BOOTSTRAP)`, to register a dependency in the APP scope
 	and create it when the container is initialized. Both synchronous and
 	asynchronous containers can be initialized explicitly with `container.init()`
 	or automatically by entering the container context manager.

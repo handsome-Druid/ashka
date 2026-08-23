@@ -1,7 +1,7 @@
 # Bootstrap 生命周期
 
 `ashka` 为 dishka 容器增加了应用启动阶段。使用 `AshkaScope.BOOTSTRAP`
-注册的依赖仍具有 dishka `Scope.RUNTIME` 的生命周期，但会在根容器初始化时
+注册的依赖具有 dishka `Scope.APP` 的生命周期，但会在根容器初始化时
 被主动解析。
 
 ## 注册 Bootstrap 依赖
@@ -35,10 +35,13 @@ class ApplicationProvider(Provider):
 container = make_container(ApplicationProvider())
 ```
 
+不要把原生 dishka `Provider` 的 `scope` 属性直接设置为
+`AshkaScope.BOOTSTRAP`。不允许这种用法，目前也没有支持该用法的计划。
+
 `make_container()` 创建容器时只会登记 bootstrap 依赖，不会执行 ashka 的
 生命周期 `container.init()`，也不会解析这些依赖。用户必须显式调用
 `container.init()`，或者显式进入容器上下文，才能初始化数据库。初始化后的数据库
-会在该容器的 RUNTIME 生命周期内保持缓存。
+会在该容器的 APP 生命周期内保持缓存。
 
 ## 显式初始化
 
@@ -125,7 +128,7 @@ class ApplicationProvider(Provider):
         return Metrics()
 ```
 
-执行 `container.init()` 后，`Database` 已存在于 runtime 缓存中，而 `Metrics`
+执行 `container.init()` 后，`Database` 已存在于 app 缓存中，而 `Metrics`
 仍会等到第一次调用 `container.get(Metrics)` 时才创建。
 
 ## 容器兼容性
