@@ -60,6 +60,9 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Generate type stubs
+        run: uv run pyright --createstub ashka
+
       - name: Build package
         run: uv build
 
