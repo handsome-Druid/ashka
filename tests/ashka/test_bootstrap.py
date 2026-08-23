@@ -1,13 +1,13 @@
 from collections.abc import AsyncIterator, Iterator
 
 from ashka import (
-    BOOTSTRAP,
     make_async_container,
     make_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
 from ashka.async_container import AsyncContainerType
 from ashka.container import ContainerType
+from ashka.entities.scope import AshkaScope
 
 import pytest
 from dishka import AsyncContainer, Container, Provider, Scope
@@ -93,7 +93,7 @@ def test_sync_bootstrap(entrypoint: str):
     class AppProvider(Provider):
         component = "app"
 
-        @provide(scope=BOOTSTRAP)
+        @provide(scope=AshkaScope.BOOTSTRAP)
         def resource(self) -> Iterator[SyncResource]:
             calls.append("bootstrap")
             yield resource
@@ -151,7 +151,7 @@ async def test_async_bootstrap(entrypoint: str):
     class AppProvider(Provider):
         component = "app"
 
-        @provide(scope=BOOTSTRAP)
+        @provide(scope=AshkaScope.BOOTSTRAP)
         async def resource(self) -> AsyncIterator[AsyncResource]:
             calls.append("bootstrap")
             yield resource
@@ -207,7 +207,7 @@ def test_bootstrap_provide_direct_call():
         return 1
 
     class AppProvider(Provider):
-        value = provide(staticmethod(create_value), scope=BOOTSTRAP)
+        value = provide(staticmethod(create_value), scope=AshkaScope.BOOTSTRAP)
 
     container = make_container(AppProvider())
     assert isinstance(container, Container)

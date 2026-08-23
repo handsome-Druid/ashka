@@ -2,10 +2,10 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from ashka import (
-    BOOTSTRAP,
     make_async_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+from ashka.entities.scope import AshkaScope
 from ashka.integrations.fastapi import get_container, setup_dishka
 
 from dishka import AsyncContainer, Provider
@@ -17,7 +17,7 @@ def test_fastapi_bootstrap_lifespan():
     events: list[str] = []
 
     class AppProvider(Provider):
-        @provide(scope=BOOTSTRAP)
+        @provide(scope=AshkaScope.BOOTSTRAP)
         async def resource(self) -> AsyncIterator[str]:
             events.append("initialized")
             yield "resource"

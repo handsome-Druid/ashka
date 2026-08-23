@@ -4,7 +4,7 @@ from typing import Any, overload
 from ashka.entities.bootstrap import (
     bootstrap_sources,  # pyright: ignore[reportUnknownVariableType]
 )
-from ashka.entities.scope import BOOTSTRAP, AshkaScope
+from ashka.entities.scope import AshkaScope
 
 from dishka import BaseScope, Scope
 from dishka import provide as _provide  # pyright: ignore[reportUnknownVariableType]
@@ -41,7 +41,7 @@ def provide(
         CompositeDependencySource,
     ]
 ):
-    if scope is not BOOTSTRAP:
+    if scope is not AshkaScope.BOOTSTRAP:
         return _provide(source, scope=scope, **kwargs)
 
     def scoped(source: ProvideSource):  # pyright: ignore[reportUnknownParameterType]
