@@ -3,7 +3,12 @@
 [![CI](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml/badge.svg)](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml)
 [![Publish](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml/badge.svg)](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml)
 
-`ashka` extends `reagento/dishka` with application lifecycle support.
+`ashka` extends `reagento/dishka` with async/sync application lifecycle support.
+
+The `a` prefix lets `ashka` sort before `dishka`, helping ensure the correct
+import order. The name also means async application lifecycle support, which can
+speed up startup compared with serially initializing components in a lifespan
+function.
 
 ## Documentation
 
