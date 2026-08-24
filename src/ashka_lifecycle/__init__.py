@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-def activate_lifecycle():
+def activate_lifecycle() -> None:
     """Activate the ashka lifecycle before lazy imports can defer it.
 
     Call this function manually before importing dishka to ensure that the
