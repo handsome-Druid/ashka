@@ -1,7 +1,7 @@
 [project]
 name = "ashka"
-version = "0.8.2"
-description = "Addons for dishka"
+version = "0.8.3"
+description = "Extend dishka with async/sync application lifecycle support."
 readme = "README.md"
 authors = [
     { name = "handsome-Druid", email = "102826168@qq.com" }
