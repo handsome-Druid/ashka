@@ -314,14 +314,14 @@ dev = [
 
 [[package]]
 name = "ashka-lifecycle"
-version = "0.1.0b4"
+version = "0.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "dishka" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fb/6e/f0763fe7420eb1385f4932dad6d89299b9eec885cd7fc40bbdc5ff76125a/ashka_lifecycle-0.1.0b4.tar.gz", hash = "sha256:aff7b0bb8f37ff5adc8de7899be29851701c2dfddf36b98b0c8117c23c18b2c5", size = 3966, upload-time = "2026-08-24T03:20:10.134Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/54/4a/1d19d8fd96fd46502af70ba2332ae3d430cc31373d6a4cd45b0bb9b6f420/ashka_lifecycle-0.1.1.tar.gz", hash = "sha256:2b9d6f9072064832f0129855a407325726816aca659c3d2ca995d69a97077072", size = 3797, upload-time = "2026-08-24T13:20:25.516Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ef/b1/af1abf5b931260481f4d24c9cc88e52f37d69016d27952a51816599ed590/ashka_lifecycle-0.1.0b4-py3-none-any.whl", hash = "sha256:dfbf468b8ee5be6abc36b5865d305e013841f55c0144cf5dbd52f0db8141547c", size = 9034, upload-time = "2026-08-24T03:20:09.066Z" },
+    { url = "https://files.pythonhosted.org/packages/6b/2d/592797c5b49be86305e5cccec6e07bb1a5aba5531db9f075d2cedd3893bc/ashka_lifecycle-0.1.1-py3-none-any.whl", hash = "sha256:f6453a7df8a7a06f8ac380a2edef12ddd1d4fed6e0be6f6e97c9b0a114ffa78a", size = 8992, upload-time = "2026-08-24T13:20:24.236Z" },
 ]
 
 [[package]]

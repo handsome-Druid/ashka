@@ -38,6 +38,7 @@ def test_after_dishka_with_no_warning():
 
     assert result.stdout == result.stderr == ""
 
+
 def test_no_lifecycle():
     code = """
 from importlib import util
