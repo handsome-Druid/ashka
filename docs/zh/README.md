@@ -46,7 +46,7 @@
 
 ## 功能
 
-- [Bootstrap 生命周期](features/bootstrap-lifecycle.md)
+- [Bootstrap 生命周期](features/bootstrap-lifecycle.md)（需要安装 `ashka[lifecycle]`）
 - [获取集成容器](features/integration-container-access.md)
 - [按类型分派集成](features/type-dispatched-integrations.md)
 

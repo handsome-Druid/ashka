@@ -1,5 +1,7 @@
 # Bootstrap 生命周期
 
+此功能需要安装 `ashka[lifecycle]` extra。
+
 `ashka` 为 dishka 容器增加了应用启动阶段。使用 `AshkaScope.BOOTSTRAP`
 注册的依赖具有 dishka `Scope.APP` 的生命周期，但会在根容器初始化时
 被主动解析。

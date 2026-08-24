@@ -1,5 +1,7 @@
 # Bootstrap Lifecycle
 
+This feature requires the `ashka[lifecycle]` extra.
+
 `ashka` adds an application bootstrap phase to dishka containers. Dependencies
 registered with `AshkaScope.BOOTSTRAP` use dishka's `Scope.APP` lifetime,
 but are resolved eagerly when the root container is initialized.

@@ -10,6 +10,21 @@ import order. The name also means async application lifecycle support, which can
 speed up startup compared with serially initializing components in a lifespan
 function.
 
+## Installation
+
+Install `ashka[lifecycle]` to enable all features, including Bootstrap
+lifecycle support, `AshkaScope.BOOTSTRAP`, and explicit or context-managed
+container initialization. This installation also further patches and extends
+dishka's internal container implementations so that dependencies can be
+initialized during the Bootstrap phase.
+
+If Bootstrap lifecycle support is not needed, install `ashka` without the
+extra. This provides the dishka monkey patches, supported framework
+integrations, unified container access, and type-dispatched integration setup,
+but does not provide the Bootstrap lifecycle APIs. In this mode, ashka only
+patches the integration layer rather than dishka's container internals, so its
+runtime impact is significantly smaller and should be nearly unnoticeable.
+
 ## Documentation
 
 - [English](https://github.com/handsome-Druid/ashka/blob/master/docs/en/README.md)
