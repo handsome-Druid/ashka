@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml/badge.svg)](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml)
 [![Publish](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml/badge.svg)](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml)
+[![Update dishka](https://github.com/handsome-Druid/ashka/actions/workflows/update-dishka.yml/badge.svg)](https://github.com/handsome-Druid/ashka/actions/workflows/update-dishka.yml)
 
 `ashka` extends `reagento/dishka` with async/sync application lifecycle support.
 
