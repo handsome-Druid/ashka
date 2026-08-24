@@ -1,6 +1,6 @@
 [project]
 name = "ashka"
-version = "0.8.4"
+version = "0.8.5"
 description = "Extend dishka with async/sync application lifecycle support."
 readme = "README.md"
 authors = [
@@ -39,7 +39,7 @@ dev = [
 
 [project.optional-dependencies]
 lifecycle = [
-    "ashka-lifecycle>=0.1.0b1",
+    "ashka-lifecycle>=0.1.2",
 ]
 
 [[tool.uv.index]]
