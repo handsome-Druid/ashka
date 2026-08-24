@@ -13,8 +13,8 @@ __all__ = [
 
 
 def activate_lifecycle():
-    """Activate the DISHKA lifecycle before lazy imports can defer it.
+    """Activate the ashka lifecycle before lazy imports can defer it.
 
-    Call this function manually before importing DISHKA to ensure that the
-    DISHKA lifecycle is activated in advance.
+    Call this function manually before importing dishka to ensure that the
+    dishka lifecycle is activated in advance.
     """
