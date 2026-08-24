@@ -55,11 +55,12 @@ name = "ashka-lifecycle"
 version = "0.1.0b1"
 source = { editable = "." }
 dependencies = [
-    { name = "ashka" },
+    { name = "dishka" },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "ashka" },
     { name = "fastapi" },
     { name = "httpx2" },
     { name = "pyright" },
@@ -71,10 +72,11 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "ashka", specifier = ">=0.8.0" }]
+requires-dist = [{ name = "dishka", specifier = ">=1.9.0,<=1.10.1" }]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "ashka", specifier = ">=0.8.0" },
     { name = "fastapi", specifier = ">=0.141.1" },
     { name = "httpx2", specifier = ">=2.12.0" },
     { name = "pyright", specifier = ">=1.1.411" },

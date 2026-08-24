@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       python-versions: ${{ steps.matrix.outputs.python-versions }}
-      ashka-versions: ${{ steps.matrix.outputs.ashka-versions }}
+      dishka-versions: ${{ steps.matrix.outputs.dishka-versions }}
 
     steps:
       - name: Check out repository
@@ -30,9 +30,6 @@ jobs:
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v6
-
-      - name: Upgrade ashka lock
-        run: uv lock --upgrade-package ashka
 
       - name: Generate test matrix
         id: matrix
@@ -47,15 +44,14 @@ jobs:
           from packaging.version import Version
 
           project = tomli.loads(Path("pyproject.toml").read_text())["project"]
-          lock = tomli.loads(Path("uv.lock").read_text())
           requires_python = SpecifierSet(project["requires-python"])
           dependencies = [
               Requirement(dependency)
               for dependency in project["dependencies"]
           ]
-          if len(dependencies) != 1 or dependencies[0].name.lower() != "ashka":
+          if len(dependencies) != 1 or dependencies[0].name.lower() != "dishka":
               raise RuntimeError(
-                  f"ashka must be the only project dependency: {dependencies}"
+                  f"dishka must be the only project dependency: {dependencies}"
               )
 
           python_versions = []
@@ -74,46 +70,47 @@ jobs:
                   f"No supported Python versions found for {requires_python}"
               )
 
-          ashka = dependencies[0]
+          dishka = dependencies[0]
 
           lower_bounds = [
               Version(specifier.version)
-              for specifier in ashka.specifier
+              for specifier in dishka.specifier
               if specifier.operator == ">="
           ]
-            if not lower_bounds:
-              raise RuntimeError(f"ashka must have a >= lower bound: {ashka.specifier}")
+          upper_bounds = [
+              Version(specifier.version)
+              for specifier in dishka.specifier
+              if specifier.operator == "<="
+          ]
+          if not lower_bounds or not upper_bounds:
+              raise RuntimeError(
+                  f"dishka must have closed >= and <= bounds: {dishka.specifier}"
+              )
 
-            resolved_versions = [
-              Version(package["version"])
-              for package in lock["package"]
-              if package["name"] == "ashka"
-            ]
-            if len(resolved_versions) != 1:
-              raise RuntimeError(f"Expected one locked ashka version: {resolved_versions}")
-
-            ashka_versions = list(
-              dict.fromkeys(map(str, (max(lower_bounds), resolved_versions[0])))
-            )
+          dishka_versions = list(
+              dict.fromkeys(map(str, (max(lower_bounds), min(upper_bounds))))
+          )
+          if any(version not in dishka.specifier for version in map(Version, dishka_versions)):
+              raise RuntimeError(f"Invalid dishka bounds: {dishka.specifier}")
 
           print(json.dumps({
               "python": python_versions,
-              "ashka": ashka_versions,
+              "dishka": dishka_versions,
           }))
           PY
           )
           echo "python-versions=$(echo "$matrix" | jq -c '.python')" >> "$GITHUB_OUTPUT"
-          echo "ashka-versions=$(echo "$matrix" | jq -c '.ashka')" >> "$GITHUB_OUTPUT"
+          echo "dishka-versions=$(echo "$matrix" | jq -c '.dishka')" >> "$GITHUB_OUTPUT"
 
   test:
     needs: matrix
-    name: Test (Python ${{ matrix.python-version }}, ashka ${{ matrix.ashka-version }})
+    name: Test (Python ${{ matrix.python-version }}, dishka ${{ matrix.dishka-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ${{ fromJSON(needs.matrix.outputs.python-versions) }}
-        ashka-version: ${{ fromJSON(needs.matrix.outputs.ashka-versions) }}
+        dishka-version: ${{ fromJSON(needs.matrix.outputs.dishka-versions) }}
 
     steps:
       - name: Check out repository
@@ -138,7 +135,7 @@ jobs:
         run: uv sync --dev
 
       - name: Run tests
-        run: uv run --with "ashka==${{ matrix.ashka-version }}" pytest --cov=ashka_lifecycle --cov-report=term-missing
+        run: uv run --with "dishka==${{ matrix.dishka-version }}" pytest --cov=ashka_lifecycle --cov-report=term-missing
 
   lint:
     runs-on: ubuntu-latest
@@ -192,13 +189,13 @@ jobs:
 
   production:
     needs: matrix
-    name: Production (Python ${{ matrix.python-version }}, ashka ${{ matrix.ashka-version }})
+    name: Production (Python ${{ matrix.python-version }}, dishka ${{ matrix.dishka-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ${{ fromJSON(needs.matrix.outputs.python-versions) }}
-        ashka-version: ${{ fromJSON(needs.matrix.outputs.ashka-versions) }}
+        dishka-version: ${{ fromJSON(needs.matrix.outputs.dishka-versions) }}
 
     steps:
       - name: Check out repository
@@ -220,4 +217,4 @@ jobs:
         run: uv python pin "${{ matrix.python-version }}"
 
       - name: Verify production environment
-        run: uv run --no-dev --with "ashka==${{ matrix.ashka-version }}" python -c "import ashka_lifecycle"
+        run: uv run --no-dev --with "dishka==${{ matrix.dishka-version }}" python -c "import ashka_lifecycle"
