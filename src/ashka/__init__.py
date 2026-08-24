@@ -1,3 +1,4 @@
+from importlib.util import find_spec
 from logging import getLogger
 from os import getenv
 from sys import modules
@@ -14,3 +15,6 @@ if "dishka" in modules and getenv(
     )
 
 from . import integrations as integrations
+
+if find_spec("ashka_lifecycle"):
+    from ashka_lifecycle import *  # pyright: ignore[reportWildcardImportFromLibrary]

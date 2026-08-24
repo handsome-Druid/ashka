@@ -35,12 +35,6 @@ __all__ = [
 ]
 
 
-_all = list(__all__)
-_all.remove("taskiq")
-_all.remove("get_container")
-_all.remove("setup_dishka")
-
-
 def setup_dishka(
     container: Container | AsyncContainer, app: object, *args: object, **kwargs: object
 ) -> None:

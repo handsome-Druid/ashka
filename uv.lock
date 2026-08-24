@@ -250,10 +250,15 @@ wheels = [
 
 [[package]]
 name = "ashka"
-version = "0.8.0"
+version = "0.8.1"
 source = { editable = "." }
 dependencies = [
     { name = "dishka" },
+]
+
+[package.optional-dependencies]
+lifecycle = [
+    { name = "ashka-lifecycle" },
 ]
 
 [package.dev-dependencies]
@@ -279,7 +284,11 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "dishka", specifier = ">=1.9.0,<=1.10.1" }]
+requires-dist = [
+    { name = "ashka-lifecycle", marker = "extra == 'lifecycle'", specifier = ">=0.1.0b1" },
+    { name = "dishka", specifier = ">=1.9.0,<=1.10.1" },
+]
+provides-extras = ["lifecycle"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -301,6 +310,18 @@ dev = [
     { name = "sanic", specifier = ">=25.12.1" },
     { name = "taskiq", specifier = ">=0.12.5" },
     { name = "telebot", specifier = ">=0.0.5" },
+]
+
+[[package]]
+name = "ashka-lifecycle"
+version = "0.1.0b4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "dishka" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fb/6e/f0763fe7420eb1385f4932dad6d89299b9eec885cd7fc40bbdc5ff76125a/ashka_lifecycle-0.1.0b4.tar.gz", hash = "sha256:aff7b0bb8f37ff5adc8de7899be29851701c2dfddf36b98b0c8117c23c18b2c5", size = 3966, upload-time = "2026-08-24T03:20:10.134Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ef/b1/af1abf5b931260481f4d24c9cc88e52f37d69016d27952a51816599ed590/ashka_lifecycle-0.1.0b4-py3-none-any.whl", hash = "sha256:dfbf468b8ee5be6abc36b5865d305e013841f55c0144cf5dbd52f0db8141547c", size = 9034, upload-time = "2026-08-24T03:20:09.066Z" },
 ]
 
 [[package]]

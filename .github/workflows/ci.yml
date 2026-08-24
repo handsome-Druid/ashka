@@ -6,6 +6,9 @@ on:
       - "**"
     tags-ignore:
       - "**"
+  pull_request:
+    branches:
+      - "**"
   workflow_dispatch:
     inputs:
       ref:
@@ -132,7 +135,7 @@ jobs:
         run: uv python pin "${{ matrix.python-version }}"
 
       - name: Install dependencies
-        run: uv sync --dev
+        run: uv sync --all-extras
 
       - name: Run tests
         run: uv run --with "dishka==${{ matrix.dishka-version }}" pytest --cov=ashka --cov-report=term-missing
@@ -182,7 +185,7 @@ jobs:
           enable-cache: true
 
       - name: Install dependencies
-        run: uv sync --dev
+        run: uv sync --all-extras
 
       - name: Run pyright
         run: uv run pyright src tests
@@ -217,4 +220,7 @@ jobs:
         run: uv python pin "${{ matrix.python-version }}"
 
       - name: Verify production environment
-        run: uv run --no-dev --with "dishka==${{ matrix.dishka-version }}" python -c "import ashka"
+        run: uv run --no-dev --all-extras --with "dishka==${{ matrix.dishka-version }}" python -c "import ashka"
+
+      - name: Verify production environment without lifecycle extra
+        run: uv run --no-dev --no-extra lifecycle --with "dishka==${{ matrix.dishka-version }}" python -c "import ashka; assert not hasattr(ashka, '__all__')"

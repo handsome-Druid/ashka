@@ -37,3 +37,31 @@ def test_after_dishka_with_no_warning():
     )
 
     assert result.stdout == result.stderr == ""
+
+def test_no_lifecycle():
+    code = """
+from importlib import util
+
+real_find_spec = util.find_spec
+
+
+def find_spec(name, *args, **kwargs):
+    if name == "ashka_lifecycle":
+        return None
+    return real_find_spec(name, *args, **kwargs)
+
+
+util.find_spec = find_spec
+
+import ashka
+
+assert not hasattr(ashka, "__all__")
+"""
+    result = run(
+        [executable, "-c", code],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
