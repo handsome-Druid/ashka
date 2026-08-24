@@ -52,6 +52,7 @@ actual containers.
 
 ## Features
 
+- [Use activate to Defeat Lazy Imports](features/activate.md)
 - [Bootstrap Lifecycle](features/bootstrap-lifecycle.md) (requires `ashka[lifecycle]`)
 - [Integration Container Access](features/integration-container-access.md)
 - [Type-Dispatched Integrations](features/type-dispatched-integrations.md)
