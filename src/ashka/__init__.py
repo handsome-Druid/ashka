@@ -2,12 +2,6 @@ from logging import getLogger
 from os import getenv
 from sys import modules
 
-__all__ = [
-    "AshkaScope",
-    "make_async_container",
-    "make_container",
-    "provide",
-]
 
 if "dishka" in modules and getenv(
     env := "ASHKA_DISABLE_IMPORT_WARNING", ""
@@ -21,7 +15,3 @@ if "dishka" in modules and getenv(
     )
 
 from . import integrations as integrations
-from .async_container import make_async_container
-from .container import make_container
-from .entities.scope import AshkaScope
-from .provider import provide  # pyright: ignore[reportUnknownVariableType]
