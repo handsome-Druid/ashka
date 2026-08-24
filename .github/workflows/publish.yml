@@ -3,7 +3,7 @@ name: Publish
 on:
   push:
     tags:
-      - "*"
+      - "lifecycle*"
   workflow_dispatch:
 
 permissions:
@@ -62,9 +62,9 @@ jobs:
 
       - name: Generate type stubs
         run: |
-          uv run pyright --createstub ashka
-          cp -R typings/ashka/. src/ashka/
-          touch src/ashka/py.typed
+          uv run pyright --createstub ashka_lifecycle
+          cp -R typings/ashka_lifecycle/. src/ashka_lifecycle/
+          touch src/ashka_lifecycle/py.typed
 
       - name: Build package
         run: uv build
