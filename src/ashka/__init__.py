@@ -2,7 +2,6 @@ from logging import getLogger
 from os import getenv
 from sys import modules
 
-
 if "dishka" in modules and getenv(
     env := "ASHKA_DISABLE_IMPORT_WARNING", ""
 ).strip().lower() not in ("1", "true", "yes", "on"):
