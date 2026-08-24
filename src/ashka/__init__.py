@@ -4,7 +4,7 @@ from os import getenv
 from sys import modules
 
 
-def activate():
+def activate() -> None:
     """
     Activate the aishka before lazy imports can defer it.
 
