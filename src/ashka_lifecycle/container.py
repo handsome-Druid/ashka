@@ -1,13 +1,13 @@
 from typing import Any, cast
 
-from ashka.entities.bootstrap import (
-    bootstrap_keys_by_container,
-    bootstrap_sources,  # pyright: ignore[reportUnknownVariableType]
-)
-
 import dishka
 from dishka import Container
 from dishka.provider import BaseProvider
+
+from ashka_lifecycle.entities.bootstrap import (
+    bootstrap_keys_by_container,
+    bootstrap_sources,  # pyright: ignore[reportUnknownVariableType]
+)
 
 __all__ = ["make_container"]
 

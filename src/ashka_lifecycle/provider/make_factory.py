@@ -1,15 +1,15 @@
 from collections.abc import Callable
 from typing import Any, overload
 
-from ashka.entities.bootstrap import (
-    bootstrap_sources,  # pyright: ignore[reportUnknownVariableType]
-)
-from ashka.entities.scope import AshkaScope
-
 from dishka import BaseScope, Scope
 from dishka import provide as _provide  # pyright: ignore[reportUnknownVariableType]
 from dishka.dependency_source.composite import CompositeDependencySource
 from dishka.provider.make_factory import ProvideSource
+
+from ashka_lifecycle.entities.bootstrap import (
+    bootstrap_sources,  # pyright: ignore[reportUnknownVariableType]
+)
+from ashka_lifecycle.entities.scope import AshkaScope
 
 __all__ = ["provide"]
 

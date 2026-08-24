@@ -1,16 +1,16 @@
 from collections.abc import AsyncIterator, Iterator
 
-from ashka import (
+import pytest
+from dishka import AsyncContainer, Container, Provider, Scope
+
+from ashka_lifecycle import (
     make_async_container,
     make_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
-from ashka.async_container import AsyncContainerType
-from ashka.container import ContainerType
-from ashka.entities.scope import AshkaScope
-
-import pytest
-from dishka import AsyncContainer, Container, Provider, Scope
+from ashka_lifecycle.async_container import AsyncContainerType
+from ashka_lifecycle.container import ContainerType
+from ashka_lifecycle.entities.scope import AshkaScope
 
 
 class SyncResource:
