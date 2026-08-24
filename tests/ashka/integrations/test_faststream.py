@@ -2,12 +2,12 @@ from subprocess import run
 from sys import executable
 from unittest.mock import Mock
 
-from ashka import make_async_container
 from ashka.integrations.faststream import (
     get_container,
     setup_dishka,  # pyright: ignore[reportUnknownVariableType]
 )
 
+from dishka import make_async_container
 from faststream import FastStream
 from faststream._internal.broker import BrokerUsecase
 
