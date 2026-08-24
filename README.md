@@ -1,5 +1,9 @@
 # ashka-lifecycle
 
+[![CI](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml/badge.svg?branch=lifecycle)](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml)
+[![Publish](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml/badge.svg?branch=lifecycle)](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml)
+[![Update dishka](https://github.com/handsome-Druid/ashka/actions/workflows/update-dishka.yml/badge.svg?branch=lifecycle)](https://github.com/handsome-Druid/ashka/actions/workflows/update-dishka.yml)
+
 `ashka-lifecycle` adds an application bootstrap phase to dishka containers. Dependencies
 registered with `AshkaScope.BOOTSTRAP` are created eagerly when the root
 container is initialized, while retaining the dependency, caching, and
