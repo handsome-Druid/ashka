@@ -1,11 +1,20 @@
+from .async_container import make_async_container
+from .container import make_container
+from .entities.scope import AshkaScope
+from .provider import provide  # pyright: ignore[reportUnknownVariableType]
+
 __all__ = [
     "AshkaScope",
+    "activate_lifecycle",
     "make_async_container",
     "make_container",
     "provide",
 ]
 
-from .async_container import make_async_container
-from .container import make_container
-from .entities.scope import AshkaScope
-from .provider import provide  # pyright: ignore[reportUnknownVariableType]
+
+def activate_lifecycle():
+    """Activate the DISHKA lifecycle before lazy imports can defer it.
+
+    Call this function manually before importing DISHKA to ensure that the
+    DISHKA lifecycle is activated in advance.
+    """

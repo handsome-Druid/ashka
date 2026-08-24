@@ -22,7 +22,7 @@ localized to the public extension points and leaves dishka's existing scope,
 caching, shutdown, and factory behavior in control.
 
 `ashka-lifecycle` can also be installed and used independently from `ashka` as
-an escape hatch. In this mode, manually import `ashka_lifecycle` before
+an escape hatch. In this mode, manually import `ashka_lifecycle` and manually call `ashka_lifecycle.activate_lifecycle()` before
 importing `dishka` to ensure that its patches are applied.
 
 See more details and about how to use:
