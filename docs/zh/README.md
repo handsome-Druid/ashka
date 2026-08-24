@@ -1,5 +1,9 @@
 # ashka
 
+[![CI](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml/badge.svg?branch=lifecycle)](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml)
+[![Publish](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml/badge.svg?branch=lifecycle)](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml)
+[![Update dishka](https://github.com/handsome-Druid/ashka/actions/workflows/update-dishka.yml/badge.svg?branch=lifecycle)](https://github.com/handsome-Druid/ashka/actions/workflows/update-dishka.yml)
+
 ## 项目要求
 
 请查看 [pyproject.toml](../../pyproject.toml)。

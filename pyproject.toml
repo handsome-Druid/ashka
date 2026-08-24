@@ -1,6 +1,6 @@
 [project]
 name = "ashka"
-version = "0.8.5"
+version = "0.8.6"
 description = "Extend dishka with async/sync application lifecycle support."
 readme = "README.md"
 authors = [
