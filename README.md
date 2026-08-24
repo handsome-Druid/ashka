@@ -1,48 +1,31 @@
-# ashka
+# ashka-lifecycle
 
-[![CI](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml/badge.svg)](https://github.com/handsome-Druid/ashka/actions/workflows/ci.yml)
-[![Publish](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml/badge.svg)](https://github.com/handsome-Druid/ashka/actions/workflows/publish.yml)
+`ashka-lifecycle` adds an application bootstrap phase to dishka containers. Dependencies
+registered with `AshkaScope.BOOTSTRAP` are created eagerly when the root
+container is initialized, while retaining the dependency, caching, and
+shutdown behavior of dishka's `Scope.APP`. Both synchronous and asynchronous
+containers support explicit initialization and initialization through their
+context managers.
 
-`ashka` extends `reagento/dishka` with async/sync application lifecycle support.
+The implementation is designed to keep the integration with dishka minimally
+intrusive. ashka-lifecycle extends the public provider and container construction APIs,
+while leaving dishka's scope and factory implementations unchanged. The
+`AshkaScope.BOOTSTRAP` value is only an ashka-side marker; the provider maps it
+to dishka's native `Scope.APP` instead of introducing a new dishka scope.
 
-The `a` prefix lets `ashka` sort before `dishka`, helping ensure the correct
-import order. The name also means async application lifecycle support, which can
-speed up startup compared with serially initializing components in a lifespan
-function.
+ashka-lifecycle maintains its own registry of Bootstrap provider sources and the
+corresponding dependency keys for each container. When a container is entered,
+ashka-lifecycle looks up the registered keys and eagerly resolves them using the existing
+container API. Synchronous containers resolve them one by one, while
+asynchronous containers resolve them concurrently. This keeps the changes
+localized to the public extension points and leaves dishka's existing scope,
+caching, shutdown, and factory behavior in control.
 
-## Documentation
+`ashka-lifecycle` can also be installed and used independently from `ashka` as
+an escape hatch. In this mode, manually import `ashka_lifecycle` before
+importing `dishka` to ensure that its patches are applied.
 
-- [English](https://github.com/handsome-Druid/ashka/blob/master/docs/en/README.md)
-- [中文](https://github.com/handsome-Druid/ashka/blob/master/docs/zh/README.md)
+See more details and about how to use:
 
-## Current Features
-
-- Pass `AshkaScope.BOOTSTRAP` to the `scope` parameter of `ashka.provide`, for example
-	`@ashka.provide(scope=ashka.AshkaScope.BOOTSTRAP)`, to register a dependency in the APP scope
-	and create it when the container is initialized. Both synchronous and
-	asynchronous containers can be initialized explicitly with `container.init()`
-	or automatically by entering the container context manager.
-- Each ashka integration provides a consistent `get_container` function. It
-	retrieves the container passed to `setup_dishka` from the integrated
-	framework application, router, broker, context, or other supported object.
-- The central `ashka.integrations.setup_dishka` and
-	`ashka.integrations.get_container` functions automatically dispatch to the
-	corresponding integration based on the type of the object passed to them.
-- Integrations are available for Aiogram, Aiohttp, ARQ, Celery, Click, FastAPI,
-	Flask, Litestar, Sanic, Starlette, Taskiq, and Telebot. FastStream is
-	available as a manual opt-in integration.
-
-## Patched Implementations
-
-- `dishka.**.make_container` -> `ashka.**.make_container`
-- `dishka.**.make_async_container` -> `ashka.**.make_async_container`
-- `dishka.integrations.*.setup_dishka` -> `ashka.integrations.*.setup_dishka`
-
-These monkey patches keep the API paths consistent with upstream dishka and
-reduce the cognitive load during migration. Import `ashka` before importing
-these dishka APIs so existing projects can keep their current imports without
-immediate code changes. This is a migration aid rather than a stable usage
-pattern; migrate imports from dishka to ashka incrementally when convenient
-instead of relying on the monkey patches indefinitely.
-
-See [FastStream support](https://github.com/handsome-Druid/ashka/blob/master/docs/en/support/faststream.md) for its support status and manual opt-in.
+[English](https://github.com/handsome-Druid/ashka/blob/master/docs/en/features/bootstrap-lifecycle.md)
+[中文](https://github.com/handsome-Druid/ashka/blob/master/docs/zh/features/bootstrap-lifecycle.md)
