@@ -6,8 +6,8 @@ from pytest import fixture, raises
 
 from ashka_lifecycle import (
     AshkaScope,
-    make_container,
     make_async_container,
+    make_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
 
