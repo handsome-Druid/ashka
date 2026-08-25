@@ -8,7 +8,7 @@ from ashka.integrations import __all__, get_container, setup_dishka
 from aiogram import Router
 from aiohttp.web_app import Application
 from arq import Worker
-from celery import Celery # pyright: ignore[reportMissingTypeStubs]
+from celery import Celery  # pyright: ignore[reportMissingTypeStubs]
 from click import Command, Context
 from dishka import AsyncContainer, Container, make_async_container, make_container
 from fastapi import FastAPI

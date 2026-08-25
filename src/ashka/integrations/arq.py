@@ -6,7 +6,6 @@ from ashka.async_container import AsyncContainerType
 from ashka.integrations._dispatch import dishka_setup, get_container_
 
 from dishka import AsyncContainer
-from dishka.integrations.arq import setup_dishka
 
 if find_spec("arq"):
     try:

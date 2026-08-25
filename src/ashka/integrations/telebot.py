@@ -8,7 +8,6 @@ from ashka.integrations._dispatch import dishka_setup, get_container_
 from ashka.integrations._types import P
 
 from dishka import Container
-from dishka.integrations.telebot import setup_dishka
 
 if find_spec("telebot"):
     try:
