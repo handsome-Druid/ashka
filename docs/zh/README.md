@@ -47,9 +47,10 @@
 ## 功能
 
 - [通过 activate 对抗延迟导入](features/activate.md)
-- [Bootstrap 生命周期](features/bootstrap-lifecycle.md)（需要安装 `ashka[lifecycle]`）
 - [获取集成容器](features/integration-container-access.md)
 - [按类型分派集成](features/type-dispatched-integrations.md)
+- [Bootstrap 生命周期](features/bootstrap-lifecycle.md)（需要安装 `ashka[lifecycle]`）
+- [通用 Lifespan](features/lifespan.md)（需要安装 `ashka[lifecycle]`）
 
 ## 支持状态
 
