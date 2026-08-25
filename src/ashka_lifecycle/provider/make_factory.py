@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any, get_type_hints, overload
+from typing import Any, NewType, get_type_hints, overload
 
 from dishka import BaseScope, Scope
 from dishka import provide as _provide  # pyright: ignore[reportUnknownVariableType]
@@ -56,7 +56,7 @@ def provide(
                 source,
                 scope=Scope.APP,
                 provides=ProvideMultiple[
-                    type(str(id(func)), (), {}), kwargs.pop("provides")  # pyright: ignore[reportUnknownArgumentType, reportInvalidTypeArguments]
+                    NewType("", object), kwargs.pop("provides")  # pyright: ignore[reportUnknownArgumentType, reportInvalidTypeArguments, reportArgumentType]
                 ],
                 **kwargs,
             )
@@ -65,7 +65,7 @@ def provide(
                 source,
                 scope=Scope.APP,
                 provides=ProvideMultiple[
-                    type(str(id(func)), (), {}),  # pyright: ignore[reportUnknownArgumentType]
+                    NewType("", object),  # pyright: ignore[reportUnknownArgumentType, reportArgumentType]
                     _clean_result_hint(  # pyright: ignore[reportInvalidTypeArguments]
                         _guess_factory_type(func),
                         get_type_hints(func)["return"],  # pyright: ignore[reportUnknownArgumentType]
