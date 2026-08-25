@@ -53,6 +53,49 @@ class ApplicationProvider(Provider):
 
 如果 factory 提供的是其他类型，也可以使用 `provides` 参数显式指定类型。
 
+### Bootstrap 依赖键冲突
+
+ashka-lifecycle 修补后的 `make_container()` 和 `make_async_container()`
+创建容器时，会检查每个 BOOTSTRAP factory 的 component 和提供的类型。这是
+ashka-lifecycle 的行为，不是原版 dishka 工厂的行为。如果两个 factory 的
+component 和类型相同，创建容器会抛出 `ValueError`。
+
+必须进行此检查，因为 `init()` 会使用 component 和类型通过 `get()` 解析每个
+bootstrap 依赖。两个 factory 使用相同的依赖键会使被解析的 factory 不明确。为了
+确保每个 BOOTSTRAP factory 都能成功初始化，ashka-lifecycle 不允许这种重复。
+
+避免冲突最简单的方法是使用不同的 component、返回 `Literal` 或 `NewType`，或者
+使用 `provides` 重新指定不同的提供类型：
+
+```python
+from typing import Literal, NewType
+
+
+class FirstProvider(Provider):
+    component = "first"
+
+    @provide(scope=AshkaScope.BOOTSTRAP)
+    def resource(self) -> None: ...
+
+
+class SecondProvider(Provider):
+    component = "second"
+
+    @provide(scope=AshkaScope.BOOTSTRAP)
+    def resource(self) -> None: ...
+
+
+class TypedProvider(Provider):
+    @provide(scope=AshkaScope.BOOTSTRAP)
+    def literal_resource(self) -> Literal["resource"]: ...
+
+    @provide(
+        scope=AshkaScope.BOOTSTRAP,
+        provides=NewType("ResourceName", str),
+    )
+    def named_resource(self): ...
+```
+
 不要把原生 dishka `Provider` 的 `scope` 属性直接设置为
 `AshkaScope.BOOTSTRAP`。不允许这种用法，目前也没有支持该用法的计划。
 

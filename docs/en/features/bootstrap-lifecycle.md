@@ -57,6 +57,53 @@ class ApplicationProvider(Provider):
 For a factory that provides another type, use the `provides` parameter to set
 the type explicitly instead.
 
+### Bootstrap Dependency-Key Conflicts
+
+ashka-lifecycle's patched `make_container()` and `make_async_container()`
+check every BOOTSTRAP factory's component and provided type when they create a
+container. This is ashka-lifecycle behavior, not behavior of the original
+dishka factories. If two factories have the same component and type, container
+creation raises `ValueError`.
+
+This check is required because `init()` resolves each bootstrap dependency with
+`get()` using its component and type. Two factories with the same dependency
+key would make the resolved factory ambiguous. To ensure every BOOTSTRAP
+factory can be initialized successfully, ashka-lifecycle does not allow such
+duplicates.
+
+The simplest ways to avoid a conflict are to use different components, return
+a `Literal` or `NewType`, or use `provides` to assign a different provided
+type:
+
+```python
+from typing import Literal, NewType
+
+
+class FirstProvider(Provider):
+    component = "first"
+
+    @provide(scope=AshkaScope.BOOTSTRAP)
+    def resource(self) -> None: ...
+
+
+class SecondProvider(Provider):
+    component = "second"
+
+    @provide(scope=AshkaScope.BOOTSTRAP)
+    def resource(self) -> None: ...
+
+
+class TypedProvider(Provider):
+    @provide(scope=AshkaScope.BOOTSTRAP)
+    def literal_resource(self) -> Literal["resource"]: ...
+
+    @provide(
+        scope=AshkaScope.BOOTSTRAP,
+        provides=NewType("ResourceName", str),
+    )
+    def named_resource(self): ...
+```
+
 Do not set the `scope` attribute of a native dishka `Provider` directly to
 `AshkaScope.BOOTSTRAP`. This usage is not allowed and is not currently planned
 to be supported.

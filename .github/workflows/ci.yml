@@ -220,7 +220,7 @@ jobs:
         run: uv python pin "${{ matrix.python-version }}"
 
       - name: Verify production environment
-        run: uv run --no-dev --all-extras --with "dishka==${{ matrix.dishka-version }}" python -c "import ashka"
+        run: uv run --no-dev --all-extras --with "dishka==${{ matrix.dishka-version }}" python -c "from ashka import make_container"
 
       - name: Verify production environment without lifecycle extra
         run: uv run --no-dev --no-extra lifecycle --with "dishka==${{ matrix.dishka-version }}" python -c "import ashka; assert not hasattr(ashka, '__all__')"
