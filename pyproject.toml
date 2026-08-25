@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.10,<3.15"
 dependencies = [
+    "ashka>=0.8.0",
     "dishka>=1.9.0,<=1.10.1",
 ]
 
@@ -33,6 +34,7 @@ dev = [
     "pytest-xdist>=3.8.0",
     "ruff>=0.16.4",
     "sanic>=25.12.1",
+    "sanic-testing>=24.6.0",
     "taskiq>=0.12.5",
     "telebot>=0.0.5",
 ]
