@@ -5,9 +5,9 @@ from dishka import FromDishka, Provider
 from sanic import Sanic, text
 
 from ashka.integrations import get_container as get_dispatch_container
-from ashka_lifecycle import (  # pyright: ignore[reportUnknownVariableType]
+from ashka_lifecycle import (
     make_async_container,
-    provide,
+    provide,  # pyright: ignore[reportUnknownVariableType]
 )
 from ashka_lifecycle.entities.scope import AshkaScope
 

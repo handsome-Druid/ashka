@@ -6,9 +6,9 @@ from ashka.integrations.arq import get_container, setup_dishka
 from dishka import Provider
 
 from ashka.integrations import get_container as get_dispatch_container
-from ashka_lifecycle import (  # pyright: ignore[reportUnknownVariableType]
+from ashka_lifecycle import (
     make_async_container,
-    provide,
+    provide,  # pyright: ignore[reportUnknownVariableType]
 )
 from ashka_lifecycle.entities.scope import AshkaScope
 
@@ -24,9 +24,7 @@ async def test_arq_bootstrap_lifecycle():
             yield "resource"
             events.append("closed")
 
-    async def job(ctx: dict[str, object]):
-        pass
-
+    async def job(ctx: dict[str, object]): ...
     async def init_container(ctx: dict[str, object]):
         await container.init()
 
