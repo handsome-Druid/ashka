@@ -80,7 +80,7 @@ def setup_dishka(
     broker: "BrokerType[Any, Any] | None" = None,  # pyright: ignore[reportUnknownParameterType]
     *args: object,
     **kwargs: object,
-):
+) -> None:
     if app and not broker:
         _app_setup(app, container, *args, **kwargs)
         return

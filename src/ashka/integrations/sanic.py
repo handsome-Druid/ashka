@@ -30,7 +30,7 @@ if find_spec("sanic"):
             app: Sanic[Any, Any],
             *args: object,
             **kwargs: object,
-        ):
+        ) -> None:
             _dishka_setup(app, container, *args, **kwargs)
 
         sanic.setup_dishka = setup_dishka

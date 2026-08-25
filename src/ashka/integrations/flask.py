@@ -23,7 +23,7 @@ if find_spec("flask"):
 
         def setup_dishka(
             container: Container, app: Flask, *args: object, **kwargs: object
-        ):
+        ) -> None:
             _dishka_setup(app, container, *args, **kwargs)
 
         flask.setup_dishka = setup_dishka

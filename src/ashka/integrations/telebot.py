@@ -23,7 +23,7 @@ if find_spec("telebot"):
 
         def setup_dishka(
             container: Container, bot: TeleBot, *args: object, **kwargs: object
-        ):
+        ) -> None:
             _dishka_setup(bot, container, *args, **kwargs)
 
         telebot.setup_dishka = setup_dishka
