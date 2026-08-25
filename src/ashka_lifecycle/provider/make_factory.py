@@ -75,7 +75,4 @@ def provide(
             )
         )
 
-    if source is not None:
-        return scoped(source)
-
-    return scoped  # pyright: ignore[reportUnknownVariableType]
+    return scoped if source is None else scoped(source)  # pyright: ignore[reportUnknownVariableType]
