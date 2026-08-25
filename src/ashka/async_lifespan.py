@@ -2,8 +2,8 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import cast
 
-from .async_container import AsyncContainerType
-from .integrations import get_container
+from ashka.async_container import AsyncContainerType
+from ashka.integrations import get_container
 
 
 @asynccontextmanager

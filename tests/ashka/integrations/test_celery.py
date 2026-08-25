@@ -3,7 +3,7 @@ from sys import executable
 
 from ashka.integrations.celery import get_container, setup_dishka
 
-from celery import Celery
+from celery import Celery # pyright: ignore[reportMissingTypeStubs]
 from dishka import Container, make_container
 from pytest import fixture
 

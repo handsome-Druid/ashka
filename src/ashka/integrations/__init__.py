@@ -1,6 +1,4 @@
-from dishka import AsyncContainer, Container
-
-from . import (
+from ashka.integrations import (
     aiogram,
     aiohttp,
     arq,
@@ -14,10 +12,12 @@ from . import (
     taskiq,
     telebot,
 )
-from ._dispatch import dishka_setup
-from ._dispatch import get_container_ as get_container
+from ashka.integrations._dispatch import dishka_setup
+from ashka.integrations._dispatch import get_container_ as get_container
 
-__all__ = [
+from dishka import AsyncContainer, Container
+
+__all__: list[str] = [
     "aiogram",
     "aiohttp",
     "arq",

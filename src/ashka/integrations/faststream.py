@@ -4,10 +4,10 @@ from os import getenv
 from sys import modules
 from typing import Any
 
-from dishka import AsyncContainer
+from ashka.async_container import AsyncContainerType
+from ashka.integrations._dispatch import dishka_setup, get_container_
 
-from ..async_container import AsyncContainerType
-from ._dispatch import dishka_setup, get_container_
+from dishka import AsyncContainer
 
 if "dishka.integrations.faststream" in modules and getenv(
     env := "ASHKA_DISABLE_IMPORT_WARNING", ""
@@ -47,7 +47,7 @@ elif FASTSTREAM_VERSION.startswith(("0.6", "0.7")):
 else:
     assert False, "unreachable"
 
-__all__ = ["get_container", "setup_dishka"]
+__all__: list[str] = ["get_container", "setup_dishka"]
 
 _setup_dishka = faststream_.setup_dishka  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
 
@@ -58,7 +58,7 @@ def _app_setup(
     container: AsyncContainer,
     *args: object,
     **kwargs: object,
-):
+) -> None:
     _setup_dishka(container, app, None, *args, **kwargs)
     app.broker.dishka_container = container  # pyright: ignore[reportOptionalMemberAccess, reportAttributeAccessIssue, reportUnknownMemberType]
 
@@ -69,7 +69,7 @@ def _broker_setup(
     container: AsyncContainer,
     *args: object,
     **kwargs: object,
-):
+) -> None:
     _setup_dishka(container, None, broker, *args, **kwargs)  # pyright: ignore[reportUnknownArgumentType]
     broker.dishka_container = container  # pyright: ignore[reportAttributeAccessIssue]
 

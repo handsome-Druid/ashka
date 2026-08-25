@@ -24,9 +24,9 @@ if "dishka" in modules and getenv(
         f"Set the environment variable '{env}' to disable this warning"
     )
 
-from . import integrations as integrations
-from .async_lifespan import async_lifespan as async_lifespan
-from .lifespan import lifespan as lifespan
+from ashka import integrations as integrations
+from ashka.async_lifespan import async_lifespan as async_lifespan
+from ashka.lifespan import lifespan as lifespan
 
 if find_spec("ashka_lifecycle"):
     from ashka_lifecycle import *  # pyright: ignore[reportWildcardImportFromLibrary]

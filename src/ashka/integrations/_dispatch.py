@@ -1,9 +1,9 @@
 from functools import singledispatch
 
-from dishka import AsyncContainer, Container
+from ashka.async_container import AsyncContainerType
+from ashka.container import ContainerType
 
-from ..async_container import AsyncContainerType
-from ..container import ContainerType
+from dishka import AsyncContainer, Container
 
 
 @singledispatch

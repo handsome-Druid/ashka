@@ -1,32 +1,58 @@
+from collections.abc import Callable
+from functools import wraps
 from importlib.util import find_spec
+from typing import Concatenate
+
+from ashka.async_container import AsyncContainerType
+from ashka.integrations._dispatch import dishka_setup, get_container_
+from ashka.integrations._types import P
 
 from dishka import AsyncContainer
-
-from ..async_container import AsyncContainerType
-from ._dispatch import dishka_setup, get_container_
 
 if find_spec("aiogram"):
     try:
         from aiogram import Router
         from dishka.integrations import aiogram
 
-        __all__ = ["get_container", "setup_dishka"]
+        __all__: list[str] = ["get_container", "setup_dishka"]
 
-        _setup_dishka = aiogram.setup_dishka
+        _setup_dishka: Callable[..., None] = aiogram.setup_dishka
 
-        @dishka_setup.register(Router)
-        def _dishka_setup(
-            router: Router, container: AsyncContainer, *args: object, **kwargs: object
+        def _dishka_setup_(
+            _setup_dishka: Callable[Concatenate[AsyncContainer, Router, P], None],
         ):
-            _setup_dishka(container, router, *args, **kwargs)
-            router.dishka_container = container  # pyright: ignore[reportAttributeAccessIssue]
+            @wraps(_setup_dishka)
+            def inner(
+                router: Router,
+                container: AsyncContainer,
+                *args: P.args,
+                **kwargs: P.kwargs,
+            ) -> None:
+                _setup_dishka(container, router, *args, **kwargs)
+                router.dishka_container = container  # pyright: ignore[reportAttributeAccessIssue]
 
-        def setup_dishka(
-            container: AsyncContainer, router: Router, *args: object, **kwargs: object
-        ) -> None:
-            _dishka_setup(router, container, *args, **kwargs)
+            return inner
 
-        aiogram.setup_dishka = setup_dishka
+        def setup_dishka_(
+            _dishka_setup: Callable[Concatenate[Router, AsyncContainer, P], None],
+        ):
+            @wraps(_dishka_setup)
+            def inner(
+                container: AsyncContainer,
+                router: Router,
+                *args: P.args,
+                **kwargs: P.kwargs,
+            ) -> None:
+                _dishka_setup(router, container, *args, **kwargs)
+
+            return inner
+
+        dishka_setup.register(Router)(_dishka_setup := _dishka_setup_(_setup_dishka))
+        setup_dishka: Callable[[AsyncContainer, Router], None] = setup_dishka_(
+            _dishka_setup
+        )
+
+        aiogram.setup_dishka = setup_dishka_(_dishka_setup)
 
         @get_container_.register(Router)
         def get_container(router: Router) -> AsyncContainerType:

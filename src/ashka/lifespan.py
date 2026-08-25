@@ -1,7 +1,7 @@
 from collections.abc import Generator
 from contextlib import contextmanager
 
-from .integrations import get_container
+from ashka.integrations import get_container
 
 
 @contextmanager
