@@ -56,9 +56,9 @@ def provide(
                 source,
                 scope=Scope.APP,
                 provides=ProvideMultiple[
-                    NewType("", object), kwargs.pop("provides")  # pyright: ignore[reportUnknownArgumentType, reportInvalidTypeArguments, reportArgumentType]
+                    NewType("", object), (_kwargs := kwargs.copy()).pop("provides")  # pyright: ignore[reportUnknownArgumentType, reportInvalidTypeArguments, reportArgumentType]
                 ],
-                **kwargs,
+                **_kwargs,
             )
             if "provides" in kwargs
             else _provide(
