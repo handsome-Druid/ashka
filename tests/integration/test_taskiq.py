@@ -1,12 +1,12 @@
 from collections.abc import AsyncIterator
 
 import pytest
+from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.taskiq import get_container, setup_dishka
 from dishka import FromDishka, Provider
 from dishka.integrations.taskiq import inject
 from taskiq import InMemoryBroker, TaskiqEvents
 
-from ashka.integrations import get_container as get_dispatch_container
 from ashka_lifecycle import (
     make_async_container,
     provide,  # pyright: ignore[reportUnknownVariableType]

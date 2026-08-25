@@ -1,10 +1,10 @@
 from collections.abc import AsyncIterator
 
+from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.sanic import get_container, setup_dishka
 from dishka import FromDishka, Provider
 from sanic import Sanic, text
 
-from ashka.integrations import get_container as get_dispatch_container
 from ashka_lifecycle import (
     make_async_container,
     provide,  # pyright: ignore[reportUnknownVariableType]

@@ -1,11 +1,11 @@
 from collections.abc import Iterator
 
 import click
+from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.click import get_container, setup_dishka
 from click.testing import CliRunner
 from dishka import FromDishka, Provider
 
-from ashka.integrations import get_container as get_dispatch_container
 from ashka_lifecycle import (
     make_container,
     provide,  # pyright: ignore[reportUnknownVariableType]

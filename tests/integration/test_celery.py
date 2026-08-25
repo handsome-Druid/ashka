@@ -1,11 +1,11 @@
 from collections.abc import Iterator
 
+from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.celery import get_container, setup_dishka
 from celery import Celery  # pyright: ignore[reportMissingTypeStubs]
 from dishka import FromDishka, Provider
 from dishka.integrations.celery import DishkaTask
 
-from ashka.integrations import get_container as get_dispatch_container
 from ashka_lifecycle import (
     make_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
