@@ -11,11 +11,11 @@ if all(
     bootstrap_keys_by_container: (  # pragma: nocover
         WeakKeyDictionary[
             Container | AsyncContainer,
-            list[DependencyKey],
+            set[DependencyKey],
         ]
         | dict[
             Container | AsyncContainer,
-            list[DependencyKey],
+            set[DependencyKey],
         ]
     ) = WeakKeyDictionary()
 
