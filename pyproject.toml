@@ -8,7 +8,6 @@ authors = [
 ]
 requires-python = ">=3.10,<3.15"
 dependencies = [
-    "ashka>=0.8.0",
     "dishka>=1.9.0,<=1.10.1",
 ]
 
@@ -21,6 +20,7 @@ dev = [
     "aiogram>=3.30.0",
     "aiohttp>=3.14.3",
     "arq>=0.28.0",
+    "ashka>=0.8.0",
     "celery>=5.6.3",
     "click>=8.4.2",
     "fastapi>=0.141.1",
