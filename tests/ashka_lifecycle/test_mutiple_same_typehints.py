@@ -2,7 +2,7 @@ from collections.abc import Generator
 from typing import Literal, NewType
 
 from dishka import Provider
-from pytest import fixture, raises
+from pytest import fixture
 
 from ashka_lifecycle import (
     AshkaScope,
@@ -74,11 +74,11 @@ def p3():
     return P3()
 
 
-def test_conflict_dependency_key(p1: P1):
-    with raises(ValueError):
-        make_container(p1)
-    with raises(ValueError):
-        make_async_container(p1)
+def test_past_conflict_dependency_key(p1: P1):
+    # with raises(ValueError):
+    make_container(p1)
+    # with raises(ValueError):
+    make_async_container(p1)
 
 
 def test_compatible_dependency_keys(p2: P2, p3: P3):

@@ -2,7 +2,7 @@ from asyncio import gather
 from typing import Any, cast
 
 import dishka
-from dishka import AsyncContainer, DependencyKey
+from dishka import AsyncContainer
 from dishka.provider import BaseProvider
 
 from ashka_lifecycle.entities.bootstrap import (
@@ -45,25 +45,15 @@ _make_async_container = dishka.make_async_container
 
 
 def make_async_container(*providers: BaseProvider, **kwargs: Any) -> AsyncContainerType:
-    container_key: set[DependencyKey] = set()
-
-    for provider in providers:
-        for factory in provider.factories:
-            if (
-                source := getattr(factory.source, "__func__", factory.source)
-                in bootstrap_sources
-            ):
-                if (
-                    key := factory.provides.with_component(provider.component)
-                ) in container_key:
-                    raise ValueError(
-                        f"{source} with component: {key.component} and type hint: {key.type_hint} conflicts with other factories."
-                    )
-                container_key.add(key)
-
     bootstrap_keys_by_container[
         async_container := _make_async_container(*providers, **kwargs)
-    ] = container_key
+    ] = [
+        factory.provides.with_component(provider.component)
+        for provider in providers
+        for factory in provider.factories
+        if getattr(factory.source, "__func__", factory.source) in bootstrap_sources
+    ]
+
     return cast(AsyncContainerType, async_container)
 
 
