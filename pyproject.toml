@@ -75,4 +75,3 @@ section-order = [
 [tool.pyright]
 include = ["src", "tests"]
 typeCheckingMode = "strict"
-strict = ["src"]
