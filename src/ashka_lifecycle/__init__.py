@@ -1,9 +1,11 @@
-from .async_container import make_async_container
-from .container import make_container
-from .entities.scope import AshkaScope
-from .provider import provide  # pyright: ignore[reportUnknownVariableType]
+from ashka_lifecycle.async_container import make_async_container
+from ashka_lifecycle.container import make_container
+from ashka_lifecycle.entities.scope import AshkaScope
+from ashka_lifecycle.provider import (
+    provide,  # pyright: ignore[reportUnknownVariableType]
+)
 
-__all__ = [
+__all__: list[str] = [
     "AshkaScope",
     "activate_lifecycle",
     "make_async_container",

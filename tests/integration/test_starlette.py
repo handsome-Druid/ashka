@@ -1,6 +1,12 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+from ashka_lifecycle import (
+    make_async_container,
+    provide,  # pyright: ignore[reportUnknownVariableType]
+)
+from ashka_lifecycle.entities.scope import AshkaScope
+
 from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.starlette import get_container, setup_dishka
 from dishka import Provider
@@ -8,12 +14,6 @@ from starlette.applications import Starlette
 from starlette.responses import PlainTextResponse
 from starlette.routing import Route
 from starlette.testclient import TestClient
-
-from ashka_lifecycle import (
-    make_async_container,
-    provide,  # pyright: ignore[reportUnknownVariableType]
-)
-from ashka_lifecycle.entities.scope import AshkaScope
 
 
 def test_starlette_bootstrap_lifecycle():

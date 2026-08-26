@@ -1,8 +1,5 @@
 from collections.abc import AsyncIterator, Iterator
 
-import pytest
-from dishka import AsyncContainer, Container, Provider, Scope
-
 from ashka_lifecycle import (
     make_async_container,
     make_container,
@@ -11,6 +8,9 @@ from ashka_lifecycle import (
 from ashka_lifecycle.async_container import AsyncContainerType
 from ashka_lifecycle.container import ContainerType
 from ashka_lifecycle.entities.scope import AshkaScope
+
+import pytest
+from dishka import AsyncContainer, Container, Provider, Scope
 
 
 class SyncResource:

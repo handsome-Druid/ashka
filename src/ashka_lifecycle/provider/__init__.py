@@ -1,3 +1,5 @@
-from .make_factory import provide  # pyright: ignore[reportUnknownVariableType]
+from ashka_lifecycle.provider.make_factory import (
+    provide,  # pyright: ignore[reportUnknownVariableType]
+)
 
-__all__ = ["provide"]
+__all__: list[str] = ["provide"]

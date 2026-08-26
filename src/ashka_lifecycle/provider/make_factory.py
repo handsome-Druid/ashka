@@ -1,6 +1,11 @@
 from collections.abc import Callable
 from typing import Any, NewType, get_type_hints, overload
 
+from ashka_lifecycle.entities.bootstrap import (
+    bootstrap_sources,  # pyright: ignore[reportUnknownVariableType]
+)
+from ashka_lifecycle.entities.scope import AshkaScope
+
 from dishka import BaseScope, Scope
 from dishka import provide as _provide  # pyright: ignore[reportUnknownVariableType]
 from dishka.dependency_source.composite import CompositeDependencySource
@@ -11,12 +16,7 @@ from dishka.provider.make_factory import (
     _guess_factory_type,  # pyright: ignore[reportPrivateUsage]
 )
 
-from ashka_lifecycle.entities.bootstrap import (
-    bootstrap_sources,  # pyright: ignore[reportUnknownVariableType]
-)
-from ashka_lifecycle.entities.scope import AshkaScope
-
-__all__ = ["provide"]
+__all__: list[str] = ["provide"]
 
 
 @overload
@@ -49,7 +49,7 @@ def provide(
     if scope is not AshkaScope.BOOTSTRAP:
         return _provide(source, scope=scope, **kwargs)
 
-    def scoped(source: ProvideSource):  # pyright: ignore[reportUnknownParameterType]
+    def scoped(source: ProvideSource) -> CompositeDependencySource:  # pyright: ignore[reportUnknownParameterType]
         bootstrap_sources.add(func := getattr(source, "__func__", source))  # pyright: ignore[reportUnknownVariableType, reportUnknownArgumentType, reportUnknownMemberType]
         return (
             _provide(

@@ -63,11 +63,11 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Generate type stubs
-        run: |
-          uv run pyright --createstub ashka_lifecycle
-          cp -R typings/ashka_lifecycle/. src/ashka_lifecycle/
-          touch src/ashka_lifecycle/py.typed
+      # - name: Generate type stubs
+      #   run: |
+      #     uv run pyright --createstub ashka_lifecycle
+      #     cp -R typings/ashka_lifecycle/. src/ashka_lifecycle/
+      #     touch src/ashka_lifecycle/py.typed
 
       - name: Build package
         run: uv build

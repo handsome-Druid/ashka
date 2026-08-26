@@ -1,15 +1,15 @@
 from collections.abc import Generator
 from typing import Literal, NewType
 
-from dishka import Provider
-from pytest import fixture
-
 from ashka_lifecycle import (
     AshkaScope,
     make_async_container,
     make_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+
+from dishka import Provider
+from pytest import fixture
 
 result: set[str] = set()
 

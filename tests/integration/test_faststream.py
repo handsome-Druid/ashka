@@ -1,5 +1,11 @@
 from collections.abc import AsyncIterator
 
+from ashka_lifecycle import (
+    make_async_container,
+    provide,  # pyright: ignore[reportUnknownVariableType]
+)
+from ashka_lifecycle.entities.scope import AshkaScope
+
 import pytest
 from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.faststream import (
@@ -9,12 +15,6 @@ from ashka.integrations.faststream import (
 from dishka import FromDishka, Provider
 from faststream import FastStream
 from faststream.redis import RedisBroker, TestApp, TestRedisBroker
-
-from ashka_lifecycle import (
-    make_async_container,
-    provide,  # pyright: ignore[reportUnknownVariableType]
-)
-from ashka_lifecycle.entities.scope import AshkaScope
 
 
 @pytest.mark.asyncio
