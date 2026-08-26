@@ -1,5 +1,6 @@
 from collections.abc import Callable
-from typing import Any, NewType, get_type_hints, overload
+from inspect import isbuiltin, isclass, isfunction
+from typing import Any, NewType, get_origin, get_type_hints, overload
 
 from ashka_lifecycle.entities.bootstrap import (
     bootstrap_types,
@@ -55,20 +56,31 @@ def provide(
                 source,
                 scope=Scope.APP,
                 provides=ProvideMultiple[
-                    new_type, (_kwargs := kwargs.copy()).pop("provides")  # pyright: ignore[reportUnknownArgumentType, reportInvalidTypeArguments, reportArgumentType]
+                    new_type, (_kwargs := kwargs.copy()).pop(provides)  # pyright: ignore[reportInvalidTypeArguments]
                 ],
                 **_kwargs,
             )
-            if not bootstrap_types.add(new_type := NewType("_", object))
-            and "provides" in kwargs
+            if bootstrap_types.add(new_type := NewType("_", object)) is None
+            and (provides := "provides") in kwargs
             else _provide(
                 source,
                 scope=Scope.APP,
                 provides=ProvideMultiple[
-                    new_type,  # pyright: ignore[reportUnknownArgumentType, reportArgumentType]
-                    _clean_result_hint(  # pyright: ignore[reportInvalidTypeArguments]
+                    new_type,
+                    source  # pyright: ignore[reportInvalidTypeArguments]
+                    if isclass(source) or isclass(get_origin(source))  # pyright: ignore[reportUnknownArgumentType]
+                    else _clean_result_hint(
                         _guess_factory_type(
-                            func := getattr(source, "__func__", source)  # pyright: ignore[reportUnknownArgumentType, reportUnknownVariableType]
+                            func := getattr(source, "__func__", None)  # pyright: ignore[reportUnknownVariableType, reportUnknownArgumentType]
+                            or (
+                                source
+                                if isfunction(source) or isbuiltin(source)  # pyright: ignore[reportUnknownArgumentType]
+                                else getattr(
+                                    source.__call__, # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType, reportUnknownArgumentType]
+                                    "__func__",
+                                    source.__call__,  # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType, reportUnknownArgumentType]
+                                )
+                            )
                         ),
                         get_type_hints(func)["return"],  # pyright: ignore[reportUnknownArgumentType]
                     ),
