@@ -12,16 +12,18 @@ _logger = getLogger(__name__)
 @asynccontextmanager
 async def async_lifespan(app: object) -> AsyncGenerator[None, None]:
     """
-    Manage the application container lifecycle.
+    Manage the async application container lifecycle.
+
+    Not recommended to use a sync container with an async application.
 
     Only available when installed with `ashka[lifecycle]`.
 
     Examples
     --------
-    If you need a custom lifespan, copy the entire implementation into your code and modify it there instead of importing `async_lifespan` from this repository and trying to patch it::
+    If you need a custom lifespan, copy the example implementation into your code and modify it there instead of importing `async_lifespan` from this repository and trying to patch it::
 
         @asynccontextmanager
-        async def async_lifespan(app: object) ->  AsyncGenerator[None, None]:
+        async def lifespan(app: object) ->  AsyncGenerator[None, None]:
             async with get_container(app):
                 yield
     """

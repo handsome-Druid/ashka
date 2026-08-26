@@ -15,7 +15,7 @@ def lifespan(app: object) -> Generator[None, None, None]:
 
     Examples
     --------
-    If you need a custom lifespan, copy the entire implementation into your code and modify it there instead of importing `lifespan` from this repository and trying to patch it::
+    If you need a custom lifespan, copy the example implementation into your code and modify it there instead of importing `lifespan` from this repository and trying to patch it::
 
         @contextmanager
         def lifespan(app: object) -> Generator[None, None, None]:
