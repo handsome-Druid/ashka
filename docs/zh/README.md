@@ -4,6 +4,18 @@
 
 请查看 [pyproject.toml](../../pyproject.toml)。
 
+## 安装
+
+安装 `ashka[lifecycle]` 可以启用所有功能，包括 Bootstrap 生命周期支持、
+`AshkaScope.BOOTSTRAP`，以及显式初始化或使用上下文管理器初始化容器。此安装方式
+会为 dishka 的同步和异步容器添加 `init()`，并扩展上下文进入行为，使依赖可以在
+Bootstrap 阶段初始化。
+
+如果不需要 Bootstrap 生命周期支持，可以安装不带 extra 的 `ashka`。这种安装方式
+提供受支持的框架集成、统一容器访问和按类型分派的集成配置，但不提供 Bootstrap
+生命周期 API。导入 `ashka` 时，它会替换 Dishka 部分框架集成中的
+`setup_dishka`，使已有的 Dishka 导入路径也能使用 ashka 扩展后的集成功能。
+
 ## 公开接口
 
 优先从 `ashka` 导入下表接口，以获得正确的返回类型。为兼容旧项目，部分 dishka
@@ -21,8 +33,8 @@
 | `ashka.integrations.faststream.get_container` | 需要从 `ashka.integrations.faststream` 导入 |
 | `ashka.lifespan` | 需要从 `ashka` 导入；安装 `ashka[lifecycle]` 后会自动将 `container.init()` 挂载到 lifespan |
 | `ashka.async_lifespan` | 需要从 `ashka` 导入；安装 `ashka[lifecycle]` 后会自动将 `container.init()` 挂载到 lifespan |
-| `dishka.**.make_container` | 会 monkey patch；需要安装 `ashka[lifecycle]` |
-| `dishka.**.make_async_container` | 会 monkey patch；需要安装 `ashka[lifecycle]` |
+| `dishka.Container.init` | 通过 monkey patch 添加；需要安装 `ashka[lifecycle]` |
+| `dishka.AsyncContainer.init` | 通过 monkey patch 添加；需要安装 `ashka[lifecycle]` |
 | `ashka.AshkaScope` | 需要从 `ashka` 导入；需要安装 `ashka[lifecycle]` |
 | `ashka.provide` | 需要从 `ashka` 导入；需要安装 `ashka[lifecycle]` |
 

@@ -13,7 +13,7 @@ import ashka
 
 ashka.activate()
 
-from dishka import make_container
+from dishka.integrations.fastapi import setup_dishka
 ```
 
 ## Import Sorting
@@ -27,7 +27,7 @@ import ashka
 
 ashka.activate()
 
-from dishka import make_container
+from dishka.integrations.fastapi import setup_dishka
 ```
 
 `activate()` is not part of the import block, so the sorting rule cannot move

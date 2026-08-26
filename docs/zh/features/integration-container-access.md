@@ -9,8 +9,8 @@
 从对应框架的集成模块导入这两个函数：
 
 ```python
-from ashka import make_async_container
 from ashka.integrations.fastapi import get_container, setup_dishka
+from dishka import make_async_container
 from fastapi import FastAPI
 
 
@@ -33,8 +33,8 @@ assert get_container(app) is container
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from ashka import make_async_container
 from ashka.integrations.fastapi import get_container, setup_dishka
+from dishka import make_async_container
 from fastapi import FastAPI
 
 
@@ -60,9 +60,9 @@ setup_dishka(make_async_container(ApplicationProvider()), app)
 同步集成使用相同的配置和获取模式：
 
 ```python
-from ashka import make_container
 from ashka.integrations.celery import get_container, setup_dishka
 from celery import Celery
+from dishka import make_container
 
 
 app = Celery("worker")

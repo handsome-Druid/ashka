@@ -9,8 +9,8 @@ way to retrieve the exact container previously attached to a framework object.
 Import both functions from the integration for the framework:
 
 ```python
-from ashka import make_async_container
 from ashka.integrations.fastapi import get_container, setup_dishka
+from dishka import make_async_container
 from fastapi import FastAPI
 
 
@@ -35,8 +35,8 @@ second application-global reference:
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from ashka import make_async_container
 from ashka.integrations.fastapi import get_container, setup_dishka
+from dishka import make_async_container
 from fastapi import FastAPI
 
 
@@ -62,9 +62,9 @@ Application hooks, extensions, and infrastructure code can call
 Synchronous integrations use the same setup-and-retrieve pattern:
 
 ```python
-from ashka import make_container
 from ashka.integrations.celery import get_container, setup_dishka
 from celery import Celery
+from dishka import make_container
 
 
 app = Celery("worker")

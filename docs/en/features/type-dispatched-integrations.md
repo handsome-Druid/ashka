@@ -61,6 +61,7 @@ the registration of their base framework class:
 
 ```python
 import ashka
+from dishka import make_async_container
 from fastapi import FastAPI
 
 
@@ -69,7 +70,7 @@ class Application(FastAPI):
 
 
 app = Application()
-container = ashka.make_async_container(ApplicationProvider())
+container = make_async_container(ApplicationProvider())
 
 ashka.integrations.setup_dishka(
     container, app

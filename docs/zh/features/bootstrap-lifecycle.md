@@ -19,8 +19,8 @@
 ```python
 from collections.abc import Iterator
 
-from ashka import AshkaScope, make_container, provide
-from dishka import Provider
+from ashka import AshkaScope, provide
+from dishka import Provider, make_container
 
 
 class Database:
@@ -56,10 +56,10 @@ class ApplicationProvider(Provider):
 不要把原生 dishka `Provider` 的 `scope` 属性直接设置为
 `AshkaScope.BOOTSTRAP`。不允许这种用法，目前也没有支持该用法的计划。
 
-`make_container()` 创建容器时只会登记 bootstrap 依赖，不会执行 ashka 的
-生命周期 `container.init()`，也不会解析这些依赖。用户必须显式调用
-`container.init()`，或者显式进入容器上下文，才能初始化数据库。初始化后的数据库
-会在该容器的 APP 生命周期内保持缓存。
+`make_container()` 只负责创建容器，不会执行 ashka 的生命周期
+`container.init()`，也不会解析 bootstrap 依赖。用户调用 `container.init()` 或
+进入容器上下文时，ashka 会扫描容器的 registry，并解析其中的 bootstrap 依赖。
+初始化后的数据库会在该容器的 APP 生命周期内保持缓存。
 
 ## 显式初始化
 
@@ -71,23 +71,13 @@ container.init()
 container.close()
 ```
 
-如果测试需要持续创建多个 container，并且希望在关闭后清理 ashka 对 container
-的引用，可以从 `ashka.entities.bootstrap.bootstrap_keys_by_container` 取出字典，
-然后删除对应的键：
-
-```python
-from ashka.entities.bootstrap import bootstrap_keys_by_container
-
-bootstrap_keys_by_container.pop(container, None)
-```
-
 异步版本使用 `make_async_container`，并等待两个生命周期操作：
 
 ```python
 from collections.abc import AsyncIterator
 
-from ashka import AshkaScope, make_async_container, provide
-from dishka import Provider
+from ashka import AshkaScope, provide
+from dishka import Provider, make_async_container
 
 
 class ApplicationProvider(Provider):
@@ -170,28 +160,21 @@ class ApplicationProvider(Provider):
 
 ## 容器兼容性
 
-导入 `ashka` 会全局修补 dishka 的 `Container`、`AsyncContainer`、
-`make_container` 和 `make_async_container`。应先导入 `ashka`，再导入或保存
-这些 dishka API 的引用。先导入 dishka 会产生警告，因为此前保存的引用可能绕过
-ashka 的行为。
+安装 lifecycle extra 后，导入 `ashka` 会全局修补 dishka 的 `Container` 和
+`AsyncContainer`。这些 patch 会添加 `init()`，并在进入容器上下文时初始化
+bootstrap 依赖。`make_container` 和 `make_async_container` 仍是 dishka 的原生
+工厂，可以直接从 `dishka` 导入。
 
-这些 monkey patch 保持了与上游 dishka 一致的接口路径，可以降低迁移时的认知负担。
-它们用于兼容旧项目：只需优先导入 `ashka`，旧项目就不必立即修改原有的 dishka
-导入。这是一种迁移辅助机制，不是稳定的长期用法；有空时应逐步将接口从 dishka
-手动切换到 ashka，而不是长期依赖 monkey patch。
+使用生命周期方法前应先导入 `ashka`，确保容器 patch 已生效。
 
-`ContainerType` 和 `AsyncContainerType` 用于向静态类型检查器描述 ashka 增加的
-方法。工厂返回的是经过修补的 dishka 容器实例，而不是这些门面类的实例，因此
-不要使用 `isinstance(container, ContainerType)` 或
+`ContainerType` 和 `AsyncContainerType` 用于向静态类型检查器描述新增的
+`init()` 方法。dishka 原生工厂返回的是经过修补的 dishka 容器实例，而不是这些
+门面类的实例，因此不要使用 `isinstance(container, ContainerType)` 或
 `isinstance(container, AsyncContainerType)` 进行运行时判断。
 
-Bootstrap source 以及每个容器对应的 bootstrap key 存储在进程级注册表中。
-容器关闭沿用 dishka 的 `close()` 行为并清除容器缓存，因此应用可以创建多个
-根容器，但必须关闭每个不再使用的容器。
-
-容器必须通过 ashka 修补后的 `make_container` 或 `make_async_container` 工厂
-创建，才能完成 bootstrap 注册。通过未修补的 dishka 工厂创建的容器仍可附加到
-集成，但不会获得 ashka 的 bootstrap 依赖注册。
+初始化时，ashka 会遍历容器的 registry 链，并解析每个 registry 中的 bootstrap
+dependency key。容器关闭沿用 dishka 的 `close()` 行为并清除容器缓存，因此应用
+可以创建多个根容器，但必须关闭每个不再使用的容器。
 
 重复或并发调用 `init()` 时不会进行协调。初始化取消和部分失败也不会自动回滚。
 应用必须串行执行初始化，每个容器只调用一次，并在关闭容器前清理所有已部分初始化
@@ -205,9 +188,8 @@ FastAPI 的 lifespan 适合绑定容器的启动和关闭：
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from ashka import make_async_container
 from ashka.integrations.fastapi import get_container, setup_dishka
-from dishka import Provider
+from dishka import Provider, make_async_container
 from fastapi import FastAPI
 
 

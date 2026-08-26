@@ -4,6 +4,21 @@
 
 See [pyproject.toml](../../pyproject.toml).
 
+## Installation
+
+Install `ashka[lifecycle]` to enable all features, including Bootstrap
+lifecycle support, `AshkaScope.BOOTSTRAP`, and explicit or context-managed
+container initialization. This installation adds `init()` to dishka's
+synchronous and asynchronous containers and extends context entry so that
+dependencies can be initialized during the Bootstrap phase.
+
+If Bootstrap lifecycle support is not needed, install `ashka` without the
+extra. This provides supported framework integrations, unified container
+access, and type-dispatched integration setup, but does not provide the
+Bootstrap lifecycle APIs. Importing `ashka` replaces `setup_dishka` in some
+Dishka framework integrations so existing Dishka import paths can use
+ashka's extended integration behavior.
+
 ## Public API
 
 Prefer importing the APIs below from `ashka` to receive the correct return
@@ -22,8 +37,8 @@ imports to ashka instead of relying on the monkey patches long term.
 | `ashka.integrations.faststream.get_container` | Must be imported from `ashka.integrations.faststream` |
 | `ashka.lifespan` | Must be imported from `ashka`; installing `ashka[lifecycle]` automatically attaches `container.init()` to the lifespan |
 | `ashka.async_lifespan` | Must be imported from `ashka`; installing `ashka[lifecycle]` automatically attaches `container.init()` to the lifespan |
-| `dishka.**.make_container` | Is monkey-patched; requires `ashka[lifecycle]` |
-| `dishka.**.make_async_container` | Is monkey-patched; requires `ashka[lifecycle]` |
+| `dishka.Container.init` | Is added by monkey patch; requires `ashka[lifecycle]` |
+| `dishka.AsyncContainer.init` | Is added by monkey patch; requires `ashka[lifecycle]` |
 | `ashka.AshkaScope` | Must be imported from `ashka`; requires `ashka[lifecycle]` |
 | `ashka.provide` | Must be imported from `ashka`; requires `ashka[lifecycle]` |
 

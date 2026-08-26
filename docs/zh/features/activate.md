@@ -13,7 +13,7 @@ import ashka
 
 ashka.activate()
 
-from dishka import make_container
+from dishka.integrations.fastapi import setup_dishka
 ```
 
 ## 导入排序
@@ -26,7 +26,7 @@ import ashka
 
 ashka.activate()
 
-from dishka import make_container
+from dishka.integrations.fastapi import setup_dishka
 ```
 
 `activate()` 不属于 import 语句块，因此排序规则不能把 `dishka` import 移到这次

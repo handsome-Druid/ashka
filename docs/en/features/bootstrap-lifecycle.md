@@ -21,8 +21,8 @@ Use `ashka.provide` with `AshkaScope.BOOTSTRAP`:
 ```python
 from collections.abc import Iterator
 
-from ashka import AshkaScope, make_container, provide
-from dishka import Provider
+from ashka import AshkaScope, provide
+from dishka import Provider, make_container
 
 
 class Database:
@@ -61,11 +61,11 @@ Do not set the `scope` attribute of a native dishka `Provider` directly to
 `AshkaScope.BOOTSTRAP`. This usage is not allowed and is not currently planned
 to be supported.
 
-`make_container()` only registers bootstrap dependencies when it creates the
-container. It does not run ashka's lifecycle `container.init()` or resolve
-those dependencies. The user must explicitly call `container.init()` or
-explicitly enter the container context to initialize the database. Once
-initialized, the database remains cached for the app lifetime of that
+`make_container()` only creates the container. It does not run ashka's
+lifecycle `container.init()` or resolve bootstrap dependencies. When the user
+calls `container.init()` or enters the container context, ashka scans the
+container's registry and resolves the bootstrap dependencies found there.
+Once initialized, the database remains cached for the app lifetime of that
 container.
 
 ## Explicit Initialization
@@ -79,25 +79,14 @@ container.init()
 container.close()
 ```
 
-If a test repeatedly creates containers and should also remove ashka's reference
-to a container after closing it, import
-`ashka.entities.bootstrap.bootstrap_keys_by_container` and remove the
-corresponding key:
-
-```python
-from ashka.entities.bootstrap import bootstrap_keys_by_container
-
-bootstrap_keys_by_container.pop(container, None)
-```
-
 The asynchronous equivalent uses `make_async_container` and awaits both
 lifecycle operations:
 
 ```python
 from collections.abc import AsyncIterator
 
-from ashka import AshkaScope, make_async_container, provide
-from dishka import Provider
+from ashka import AshkaScope, provide
+from dishka import Provider, make_async_container
 
 
 class ApplicationProvider(Provider):
@@ -187,35 +176,26 @@ cached in the APP scope.
 
 ## Container Compatibility
 
-Importing `ashka` patches dishka's `Container`, `AsyncContainer`,
-`make_container`, and `make_async_container` globally. Import `ashka` before
-importing or storing references to those dishka APIs. Importing dishka first
-emits a warning because previously stored references may bypass ashka's
-behavior.
+Importing `ashka` with the lifecycle extra patches dishka's `Container` and
+`AsyncContainer` globally. The patches add `init()` and initialize bootstrap
+dependencies when the container context is entered. `make_container` and
+`make_async_container` remain dishka's native factories and can be imported
+directly from `dishka`.
 
-These monkey patches keep the API paths consistent with upstream dishka and
-reduce the cognitive load during migration. They exist for legacy-project
-compatibility: importing `ashka` first lets an existing project keep its
-current dishka imports without immediate code changes. This is a migration aid,
-not a stable long-term usage pattern; migrate imports from dishka to ashka
-incrementally when convenient instead of relying on the monkey patches
-indefinitely.
+Import `ashka` before using the lifecycle methods so the container patches are
+active.
 
-`ContainerType` and `AsyncContainerType` describe the additional ashka methods
-for static type checkers. The factories return patched dishka container
-instances rather than instances of these facade classes, so do not use
-`isinstance(container, ContainerType)` or
+`ContainerType` and `AsyncContainerType` describe the additional `init()`
+methods for static type checkers. Dishka's native factories return patched
+dishka container instances rather than instances of these facade classes, so
+do not use `isinstance(container, ContainerType)` or
 `isinstance(container, AsyncContainerType)` as a runtime check.
 
-Bootstrap sources and the bootstrap keys associated with each container are
-stored in process-wide registries. Container closing uses dishka's `close()`
-behavior and clears the container cache, so applications can create multiple
-root containers but must close every container that is no longer used.
-
-Containers must be created with ashka's patched `make_container` or
-`make_async_container` factory to receive bootstrap registration. A container
-created through an unpatched dishka factory can still be attached to an
-integration, but it does not gain ashka's bootstrap dependency registration.
+During initialization, ashka traverses the container's registry chain and
+resolves the bootstrap dependency keys found in each registry. Container
+closing uses dishka's `close()` behavior and clears the container cache, so
+applications can create multiple root containers but must close every
+container that is no longer used.
 
 Repeated or concurrent calls to `init()` are not coordinated. Initialization
 cancellation and partial failure are also not rolled back automatically. The
@@ -230,9 +210,8 @@ FastAPI's lifespan is a natural place to bind container startup and shutdown:
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from ashka import make_async_container
 from ashka.integrations.fastapi import get_container, setup_dishka
-from dishka import Provider
+from dishka import Provider, make_async_container
 from fastapi import FastAPI
 
 
