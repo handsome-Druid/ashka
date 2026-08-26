@@ -16,7 +16,8 @@ async def async_lifespan(app: object) -> AsyncGenerator[None, None]:
 
     Not recommended to use a sync container with an async application.
 
-    Only available when installed with `ashka[lifecycle]`.
+    Installing `ashka[lifecycle]` automatically attaches `container.init()` to the
+    lifespan.
 
     Examples
     --------

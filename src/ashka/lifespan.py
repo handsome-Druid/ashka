@@ -11,7 +11,8 @@ def lifespan(app: object) -> Generator[None, None, None]:
     """
     Manage the application container lifecycle.
 
-    Only available when installed with `ashka[lifecycle]`.
+    Installing `ashka[lifecycle]` automatically attaches `container.init()` to the
+    lifespan.
 
     Examples
     --------

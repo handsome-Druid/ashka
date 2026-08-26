@@ -19,12 +19,12 @@
 | `ashka.integrations.<framework>.get_container` | 需要从 `ashka` 导入 |
 | `ashka.integrations.faststream.setup_dishka` | 需要从 `ashka.integrations.faststream` 导入；导入后会触发 monkey patch |
 | `ashka.integrations.faststream.get_container` | 需要从 `ashka.integrations.faststream` 导入 |
+| `ashka.lifespan` | 需要从 `ashka` 导入；安装 `ashka[lifecycle]` 后会自动将 `container.init()` 挂载到 lifespan |
+| `ashka.async_lifespan` | 需要从 `ashka` 导入；安装 `ashka[lifecycle]` 后会自动将 `container.init()` 挂载到 lifespan |
 | `dishka.**.make_container` | 会 monkey patch；需要安装 `ashka[lifecycle]` |
 | `dishka.**.make_async_container` | 会 monkey patch；需要安装 `ashka[lifecycle]` |
 | `ashka.AshkaScope` | 需要从 `ashka` 导入；需要安装 `ashka[lifecycle]` |
 | `ashka.provide` | 需要从 `ashka` 导入；需要安装 `ashka[lifecycle]` |
-| `ashka.lifespan` | 需要从 `ashka` 导入；需要安装 `ashka[lifecycle]` |
-| `ashka.async_lifespan` | 需要从 `ashka` 导入；需要安装 `ashka[lifecycle]` |
 
 `ashka.container.ContainerType` 和 `ashka.async_container.AsyncContainerType`
 不是承诺的公开 API，仅可用于类型标注，不可用于运行时判断。对实际容器使用
