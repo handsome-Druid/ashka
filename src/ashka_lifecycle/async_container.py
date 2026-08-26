@@ -5,7 +5,7 @@ from typing import ParamSpec, cast
 
 from ashka_lifecycle.entities.bootstrap import (
     bootstrap_keys_by_container,
-    bootstrap_sources,  # pyright: ignore[reportUnknownVariableType]
+    bootstrap_types,
 )
 
 import dishka
@@ -63,7 +63,7 @@ def make_async_container_(
             factory.provides.with_component(provider.component)
             for provider in cast(tuple[BaseProvider, ...], providers)
             for factory in provider.factories
-            if getattr(factory.source, "__func__", factory.source) in bootstrap_sources
+            if factory.provides.type_hint in bootstrap_types
         ]
 
         return cast(AsyncContainerType, async_container)

@@ -1,9 +1,7 @@
+from types import FunctionType
 from weakref import WeakKeyDictionary, WeakSet
 
 from dishka import AsyncContainer, Container, DependencyKey
-from dishka.provider.make_factory import ProvideSource
-
-bootstrap_sources: WeakSet[ProvideSource] = WeakSet()  # pyright: ignore[reportUnknownVariableType]
 
 if all(
     hasattr(Container_, "__weakref__") for Container_ in (Container, AsyncContainer)
@@ -21,3 +19,5 @@ if all(
 
 else:
     bootstrap_keys_by_container = {}  # pragma: nocover
+
+bootstrap_types: WeakSet[FunctionType] = WeakSet()
