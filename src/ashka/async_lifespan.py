@@ -1,9 +1,12 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import cast
+from logging import getLogger
 
-from ashka.async_container import AsyncContainerType
 from ashka.integrations import get_container
+
+from dishka import AsyncContainer, Container
+
+_logger = getLogger(__name__)
 
 
 @asynccontextmanager
@@ -19,16 +22,17 @@ async def async_lifespan(app: object) -> AsyncGenerator[None, None]:
 
         @asynccontextmanager
         async def async_lifespan(app: object) ->  AsyncGenerator[None, None]:
-            await get_container(app).init()
-            try:
+            async with get_container(app):
                 yield
-            finally:
-                await get_container(app).close()
-
-
     """
-    await cast(AsyncContainerType, get_container(app)).init()
-    try:
-        yield
-    finally:
-        await cast(AsyncContainerType, get_container(app)).close()
+    match container := get_container(app):
+        case AsyncContainer():
+            async with container:
+                yield
+        case Container():
+            _logger.warning(
+                "Should not use a sync container with async lifespan; "
+                "use an async container instead."
+            )
+            with container:
+                yield

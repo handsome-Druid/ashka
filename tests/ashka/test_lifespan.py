@@ -3,13 +3,18 @@ from collections.abc import Generator
 from ashka import (
     AshkaScope,
     lifespan,
-    make_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
 from ashka.integrations import setup_dishka
 
-from dishka import Container, Provider
-from pytest import fixture
+from dishka import (
+    AsyncContainer,
+    Container,
+    Provider,
+    make_async_container,
+    make_container,
+)
+from pytest import fixture, raises
 
 result = 0
 
@@ -29,6 +34,11 @@ def container():
     return make_container(P())
 
 
+@fixture
+def async_container():
+    return make_async_container(P())
+
+
 def test_lifespan(container: Container):
     arq: dict[str, object] = {}
     setup_dishka(container, arq)
@@ -38,3 +48,10 @@ def test_lifespan(container: Container):
     assert result == 1
     lifespan_.__exit__(None, None, None)
     assert result == 0
+
+
+def test_lifespan_with_async_container(async_container: AsyncContainer):
+    arq: dict[str, object] = {}
+    setup_dishka(async_container, arq)
+    with raises(TypeError):
+        lifespan(arq).__enter__()

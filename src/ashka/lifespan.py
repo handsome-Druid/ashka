@@ -3,6 +3,8 @@ from contextlib import contextmanager
 
 from ashka.integrations import get_container
 
+from dishka import Container
+
 
 @contextmanager
 def lifespan(app: object) -> Generator[None, None, None]:
@@ -17,15 +19,10 @@ def lifespan(app: object) -> Generator[None, None, None]:
 
         @contextmanager
         def lifespan(app: object) -> Generator[None, None, None]:
-            get_container(app).init()
-            try:
+            with get_container(app):
                 yield
-            finally:
-                get_container(app).close()
-
     """
-    get_container(app).init()
-    try:
+    if not isinstance(container := get_container(app), Container):
+        raise TypeError(f"{type(Container)} is not a sync container!")
+    with container:
         yield
-    finally:
-        get_container(app).close()
