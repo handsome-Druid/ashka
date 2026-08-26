@@ -49,11 +49,8 @@ if find_spec("telebot"):
             return inner
 
         dishka_setup.register(TeleBot)(_dishka_setup := _dishka_setup_(_setup_dishka))
-        setup_dishka: Callable[[Container, TeleBot], Container] = setup_dishka_(
-            _dishka_setup
-        )
 
-        telebot.setup_dishka = setup_dishka_(_dishka_setup)
+        telebot.setup_dishka = (setup_dishka := setup_dishka_(_dishka_setup))
 
         @get_container_.register(TeleBot)
         def get_container(bot: TeleBot) -> ContainerType:

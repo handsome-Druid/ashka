@@ -50,11 +50,8 @@ if find_spec("taskiq"):
         dishka_setup.register(AsyncBroker)(
             _dishka_setup := _dishka_setup_(_setup_dishka)
         )
-        setup_dishka: Callable[[AsyncContainer, AsyncBroker], None] = setup_dishka_(
-            _dishka_setup
-        )
 
-        taskiq.setup_dishka = setup_dishka_(_dishka_setup)
+        taskiq.setup_dishka = (setup_dishka := setup_dishka_(_dishka_setup))
 
         @get_container_.register(AsyncBroker)
         def get_container(broker: AsyncBroker) -> AsyncContainerType:

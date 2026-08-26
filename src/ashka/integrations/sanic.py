@@ -52,11 +52,8 @@ if find_spec("sanic"):
             return inner
 
         dishka_setup.register(Sanic)(_dishka_setup := _dishka_setup_(_setup_dishka))
-        setup_dishka: Callable[[AsyncContainer, Sanic[Any, Any]], None] = setup_dishka_(
-            _dishka_setup
-        )
 
-        sanic.setup_dishka = setup_dishka_(_dishka_setup)
+        sanic.setup_dishka = (setup_dishka := setup_dishka_(_dishka_setup))
 
         @get_container_.register(Sanic)
         def get_container(app: Sanic[Any, Any]) -> AsyncContainerType:

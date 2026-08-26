@@ -48,9 +48,8 @@ if find_spec("flask"):
             return inner
 
         dishka_setup.register(Flask)(_dishka_setup := _dishka_setup_(_setup_dishka))
-        setup_dishka: Callable[[Container, Flask], None] = setup_dishka_(_dishka_setup)
 
-        flask.setup_dishka = setup_dishka_(_dishka_setup)
+        flask.setup_dishka = (setup_dishka := setup_dishka_(_dishka_setup))
 
         @get_container_.register(Flask)
         def get_container(app: Flask) -> ContainerType:
