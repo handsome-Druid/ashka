@@ -11,11 +11,10 @@ from ashka_lifecycle.entities.bootstrap import (
 import dishka
 from dishka import AsyncContainer
 from dishka.provider import BaseProvider
-from typing_extensions import Never
 
 __all__: list[str] = ["make_async_container"]
 
-_aenter: Callable[..., Coroutine[Never, object, AsyncContainer]] = (
+_aenter: Callable[..., Coroutine[None, object, AsyncContainer]] = (
     AsyncContainer.__aenter__
 )
 
