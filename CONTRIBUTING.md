@@ -24,6 +24,14 @@ This project uses Pyright for type checking. Run:
 uv run pyright src tests
 ```
 
+## Tests
+
+Run the test suite with coverage before submitting changes:
+
+```bash
+uv run pytest --cov=ashka --cov-report=term-missing
+```
+
 ## Before Opening a Pull Request
 
-Before opening a pull request, first commit and push your changes to your own repository so that CI runs the full test matrix. Open the pull request only after the CI checks have completed successfully.
+GitHub Actions runs the full test matrix for pull requests. You may first commit and push your changes to your own repository to verify CI before opening a pull request, or open the pull request directly and wait for the CI results in the main repository.
