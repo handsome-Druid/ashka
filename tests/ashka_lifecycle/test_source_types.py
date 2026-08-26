@@ -1,9 +1,10 @@
 import gc
 from typing import Generic, NewType, TypeVar
 
-from ashka_lifecycle import AshkaScope, make_container, provide
+from ashka_lifecycle import AshkaScope, provide
+from ashka_lifecycle.container import Container
 
-from dishka import Provider
+from dishka import Provider, make_container
 
 SourceType = TypeVar("SourceType")
 BuiltinResult = NewType("BuiltinResult", bool)
@@ -71,17 +72,15 @@ class SourceTypesProvider(Provider):
 
 def test_bootstrap_source_types():
     created.clear()
-    container = make_container(SourceTypesProvider())
+    container: Container = make_container(SourceTypesProvider())
 
-    container.init()
-
-    assert created == {
-        "callable",
-        "class",
-        "classmethod",
-        "function",
-        "generic_class",
-        "staticmethod",
-    }
-    assert container.get(BuiltinResult) is gc.isenabled()
-    container.close()
+    with container:
+        assert created == {
+            "callable",
+            "class",
+            "classmethod",
+            "function",
+            "generic_class",
+            "staticmethod",
+        }
+        assert container.get(BuiltinResult) is gc.isenabled()

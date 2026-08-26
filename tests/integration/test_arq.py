@@ -1,16 +1,16 @@
 from collections.abc import AsyncIterator
 
 from ashka_lifecycle import (
-    make_async_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+from ashka_lifecycle.async_container import AsyncContainer
 from ashka_lifecycle.entities.scope import AshkaScope
 
 import pytest
 from arq import Worker
 from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.arq import get_container, setup_dishka
-from dishka import Provider
+from dishka import Provider, make_async_container
 
 
 @pytest.mark.asyncio
@@ -26,12 +26,12 @@ async def test_arq_bootstrap_lifecycle():
 
     async def job(ctx: dict[str, object]): ...
     async def init_container(ctx: dict[str, object]):
-        await container.init()
+        await container.__aenter__()
 
     async def close_container(ctx: dict[str, object]):
         await container.close()
 
-    container = make_async_container(AppProvider())
+    container: AsyncContainer = make_async_container(AppProvider())
     worker = Worker(
         [job],
         handle_signals=False,

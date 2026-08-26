@@ -3,12 +3,11 @@ from typing import Literal, NewType
 
 from ashka_lifecycle import (
     AshkaScope,
-    make_async_container,
-    make_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+from ashka_lifecycle.container import Container
 
-from dishka import Provider
+from dishka import Provider, make_async_container, make_container
 from pytest import fixture
 
 result: set[str] = set()
@@ -82,8 +81,7 @@ def test_past_conflict_dependency_key(p1: P1):
 
 
 def test_compatible_dependency_keys(p2: P2, p3: P3):
-    container = make_container(p2, p3)
-    container.init()
-    assert all(r in result for r in ("r2", "r22", "r3", "r33"))
-    container.close()
+    container: Container = make_container(p2, p3)
+    with container:
+        assert all(r in result for r in ("r2", "r22", "r3", "r33"))
     assert not result

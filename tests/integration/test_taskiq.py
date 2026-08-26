@@ -1,15 +1,15 @@
 from collections.abc import AsyncIterator
 
 from ashka_lifecycle import (
-    make_async_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+from ashka_lifecycle.async_container import AsyncContainer
 from ashka_lifecycle.entities.scope import AshkaScope
 
 import pytest
 from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.taskiq import get_container, setup_dishka
-from dishka import FromDishka, Provider
+from dishka import FromDishka, Provider, make_async_container
 from dishka.integrations.taskiq import inject
 from taskiq import InMemoryBroker, TaskiqEvents
 
@@ -30,12 +30,12 @@ async def test_taskiq_bootstrap_lifecycle():
             events.append("closed")
 
     broker = InMemoryBroker(await_inplace=True)
-    container = make_async_container(AppProvider())
+    container: AsyncContainer = make_async_container(AppProvider())
     setup_dishka(container, broker)
 
     @broker.on_event(TaskiqEvents.WORKER_STARTUP)  # pyright: ignore[reportArgumentType]
     async def init_container(_: dict[str, object]):
-        await container.init()
+        await container.__aenter__()
 
     @broker.on_event(TaskiqEvents.WORKER_SHUTDOWN)  # pyright: ignore[reportArgumentType]
     async def close_container(_: dict[str, object]):

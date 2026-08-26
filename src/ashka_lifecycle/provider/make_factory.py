@@ -76,7 +76,7 @@ def provide(
                                 source
                                 if isfunction(source) or isbuiltin(source)  # pyright: ignore[reportUnknownArgumentType]
                                 else getattr(
-                                    source.__call__, # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType, reportUnknownArgumentType]
+                                    source.__call__,  # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType, reportUnknownArgumentType]
                                     "__func__",
                                     source.__call__,  # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType, reportUnknownArgumentType]
                                 )

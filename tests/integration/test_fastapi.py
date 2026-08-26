@@ -2,13 +2,13 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from ashka_lifecycle import (
-    make_async_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+from ashka_lifecycle.async_container import AsyncContainer
 from ashka_lifecycle.entities.scope import AshkaScope
 
 from ashka.integrations.fastapi import get_container, setup_dishka
-from dishka import AsyncContainer, Provider
+from dishka import Provider, make_async_container
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -28,9 +28,8 @@ def test_fastapi_bootstrap_lifespan():
         app_container = get_container(app)
         assert isinstance(app_container, AsyncContainer)
         assert app_container is container
-        await container.init()
-        yield
-        await container.close()
+        async with container:
+            yield
 
     app = FastAPI(lifespan=lifespan)
     container = make_async_container(AppProvider())

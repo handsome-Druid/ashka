@@ -1,16 +1,16 @@
 from collections.abc import AsyncIterator
 
 from ashka_lifecycle import (
-    make_async_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+from ashka_lifecycle.async_container import AsyncContainer
 from ashka_lifecycle.entities.scope import AshkaScope
 
 import pytest
 from aiogram import Dispatcher, Router
 from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.aiogram import get_container, setup_dishka
-from dishka import Provider
+from dishka import Provider, make_async_container
 
 
 @pytest.mark.asyncio
@@ -26,9 +26,9 @@ async def test_aiogram_bootstrap_lifecycle():
 
     dispatcher = Dispatcher()
     router = Router()
-    container = make_async_container(AppProvider())
+    container: AsyncContainer = make_async_container(AppProvider())
     setup_dishka(container, router)
-    router.startup.register(container.init)
+    router.startup.register(container.init)  # pyright: ignore[reportAttributeAccessIssue]
     router.shutdown.register(container.close)
     dispatcher.include_router(router)
 

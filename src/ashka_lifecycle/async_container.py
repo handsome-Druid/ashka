@@ -1,18 +1,11 @@
 from asyncio import gather
 from collections.abc import Callable, Coroutine
-from functools import wraps
-from typing import ParamSpec, cast
 
 from ashka_lifecycle.entities.bootstrap import (
-    bootstrap_keys_by_container,
     bootstrap_types,
 )
 
-import dishka
 from dishka import AsyncContainer
-from dishka.provider import BaseProvider
-
-__all__: list[str] = ["make_async_container"]
 
 _aenter: Callable[..., Coroutine[None, object, AsyncContainer]] = (
     AsyncContainer.__aenter__
@@ -22,55 +15,28 @@ _aenter: Callable[..., Coroutine[None, object, AsyncContainer]] = (
 async def __aenter__(self: AsyncContainer) -> AsyncContainer:
     aenter: AsyncContainer = await _aenter(self)
 
-    if self in bootstrap_keys_by_container:
-        await gather(
-            *(
-                self.get(key.type_hint, key.component)
-                for key in bootstrap_keys_by_container[self]
+    await gather(
+        *(
+            self.get(key.type_hint, key.component)
+            for registry in iter(
+                lambda state=[self.registry]: (
+                    (state[0], state.__setitem__(0, state[0].child_registry))[0]  # pyright: ignore[reportCallIssue, reportArgumentType]
+                    if state[0] is not None  # pyright: ignore[reportUnnecessaryComparison]
+                    else None
+                ),
+                None,
             )
+            for key in registry.factories
+            if key.type_hint in bootstrap_types
         )
+    )
 
     return aenter
 
 
-class AsyncContainerType(AsyncContainer):
-    __slots__ = ()
-
-    __aenter__ = __aenter__
-
-    async def init(self) -> None:
-        await self.__aenter__()
+async def init(self: AsyncContainer) -> None:
+    await self.__aenter__()
 
 
 AsyncContainer.__aenter__ = __aenter__
-AsyncContainer.init = AsyncContainerType.init  # pyright: ignore[reportAttributeAccessIssue]
-
-_make_async_container: Callable[..., AsyncContainer] = dishka.make_async_container
-
-P = ParamSpec("P")
-
-
-def make_async_container_(
-    make_async_container: Callable[P, AsyncContainer],
-) -> Callable[..., AsyncContainerType]:
-    @wraps(make_async_container)
-    def inner(*providers: P.args, **kwargs: P.kwargs) -> AsyncContainerType:
-        bootstrap_keys_by_container[
-            async_container := _make_async_container(
-                *cast(tuple[BaseProvider, ...], providers), **kwargs
-            )
-        ] = [
-            factory.provides.with_component(provider.component)
-            for provider in cast(tuple[BaseProvider, ...], providers)
-            for factory in provider.factories
-            if factory.provides.type_hint in bootstrap_types
-        ]
-
-        return cast(AsyncContainerType, async_container)
-
-    return inner
-
-
-dishka.make_async_container = dishka.async_container.make_async_container = (
-    make_async_container := make_async_container_(_make_async_container)
-)
+AsyncContainer.init = init  # pyright: ignore[reportAttributeAccessIssue]

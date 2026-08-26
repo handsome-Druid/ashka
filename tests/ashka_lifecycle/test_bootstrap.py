@@ -1,16 +1,14 @@
 from collections.abc import AsyncIterator, Iterator
 
 from ashka_lifecycle import (
-    make_async_container,
-    make_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
-from ashka_lifecycle.async_container import AsyncContainerType
-from ashka_lifecycle.container import ContainerType
+from ashka_lifecycle.async_container import AsyncContainer
+from ashka_lifecycle.container import Container
 from ashka_lifecycle.entities.scope import AshkaScope
 
 import pytest
-from dishka import AsyncContainer, Container, Provider, Scope
+from dishka import Provider, Scope, make_async_container, make_container
 
 
 class SyncResource:
@@ -109,7 +107,7 @@ def test_sync_bootstrap(entrypoint: str):
             injected_containers.append(container)
             return "request"
 
-    container: ContainerType = make_container(AppProvider())
+    container: Container = make_container(AppProvider())
     assert isinstance(container, Container)
     assert calls == []
 
@@ -130,9 +128,8 @@ def test_sync_bootstrap(entrypoint: str):
         assert calls == ["bootstrap", "runtime"]
 
     if entrypoint == "init":
-        container.init()
-        assert_initialized()
-        container.close()
+        with container:
+            assert_initialized()
     else:
         with container as entered:
             assert entered is container
@@ -167,7 +164,7 @@ async def test_async_bootstrap(entrypoint: str):
             injected_containers.append(container)
             return "request"
 
-    container: AsyncContainerType = make_async_container(AppProvider())
+    container: AsyncContainer = make_async_container(AppProvider())
     assert isinstance(container, AsyncContainer)
     assert calls == []
 
@@ -188,9 +185,8 @@ async def test_async_bootstrap(entrypoint: str):
         assert calls == ["bootstrap", "runtime"]
 
     if entrypoint == "init":
-        await container.init()
-        await assert_initialized()
-        await container.close()
+        async with container:
+            await assert_initialized()
     else:
         async with container as entered:
             assert entered is container
@@ -212,8 +208,7 @@ def test_bootstrap_provide_direct_call():
     container = make_container(AppProvider())
     assert isinstance(container, Container)
     assert calls == []
-    container.init()
-    assert calls == ["bootstrap"]
-    assert container.get(int) == 1
-    assert calls == ["bootstrap"]
-    container.close()
+    with container:
+        assert calls == ["bootstrap"]
+        assert container.get(int) == 1
+        assert calls == ["bootstrap"]

@@ -1,14 +1,14 @@
 from collections.abc import AsyncIterator
 
 from ashka_lifecycle import (
-    make_async_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+from ashka_lifecycle.async_container import AsyncContainer
 from ashka_lifecycle.entities.scope import AshkaScope
 
 from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.litestar import get_container, setup_dishka
-from dishka import Provider
+from dishka import Provider, make_async_container
 from litestar import Litestar, get
 from litestar.testing import TestClient
 
@@ -26,10 +26,10 @@ def test_litestar_bootstrap_lifecycle():
             yield Resource()
             events.append("closed")
 
-    container = make_async_container(AppProvider())
+    container: AsyncContainer = make_async_container(AppProvider())
 
     async def init_container():
-        await container.init()
+        await container.__aenter__()
 
     async def close_container():
         await container.close()

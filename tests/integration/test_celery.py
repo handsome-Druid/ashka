@@ -1,15 +1,15 @@
 from collections.abc import Iterator
 
 from ashka_lifecycle import (
-    make_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+from ashka_lifecycle.container import Container
 from ashka_lifecycle.entities.scope import AshkaScope
 
 from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.celery import get_container, setup_dishka
 from celery import Celery  # pyright: ignore[reportMissingTypeStubs]
-from dishka import FromDishka, Provider
+from dishka import FromDishka, Provider, make_container
 from dishka.integrations.celery import DishkaTask
 
 
@@ -25,7 +25,7 @@ def test_celery_bootstrap_lifecycle():
 
     app = Celery("test", broker="memory://", backend="cache+memory://")
     app.conf.task_always_eager = True  # pyright: ignore[reportUnknownMemberType]
-    container = make_container(AppProvider())
+    container: Container = make_container(AppProvider())
     setup_dishka(container, app)
 
     @app.task(base=DishkaTask)  # pyright: ignore[reportUntypedFunctionDecorator, reportUnknownMemberType, reportUnknownMemberType]

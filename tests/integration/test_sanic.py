@@ -1,14 +1,14 @@
 from collections.abc import AsyncIterator
 
 from ashka_lifecycle import (
-    make_async_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+from ashka_lifecycle.async_container import AsyncContainer
 from ashka_lifecycle.entities.scope import AshkaScope
 
 from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.sanic import get_container, setup_dishka
-from dishka import FromDishka, Provider
+from dishka import FromDishka, Provider, make_async_container
 from sanic import Sanic, text
 
 
@@ -27,11 +27,11 @@ def test_sanic_bootstrap_lifecycle():
             events.append("closed")
 
     app = Sanic("test_sanic")
-    container = make_async_container(AppProvider())
+    container: AsyncContainer = make_async_container(AppProvider())
 
     @app.before_server_start
     async def init_container(*_: object):
-        await container.init()
+        await container.__aenter__()
 
     @app.after_server_stop
     async def close_container(*_: object):

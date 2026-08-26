@@ -1,9 +1,9 @@
 from collections.abc import AsyncIterator
 
 from ashka_lifecycle import (
-    make_async_container,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
+from ashka_lifecycle.async_container import AsyncContainer
 from ashka_lifecycle.entities.scope import AshkaScope
 
 import pytest
@@ -12,7 +12,7 @@ from ashka.integrations.faststream import (
     get_container,
     setup_dishka,  # pyright: ignore[reportUnknownVariableType]
 )
-from dishka import FromDishka, Provider
+from dishka import FromDishka, Provider, make_async_container
 from faststream import FastStream
 from faststream.redis import RedisBroker, TestApp, TestRedisBroker
 
@@ -34,11 +34,11 @@ async def test_faststream_bootstrap_lifecycle():
 
     broker = RedisBroker()
     app = FastStream(broker)
-    container = make_async_container(AppProvider())
+    container: AsyncContainer = make_async_container(AppProvider())
     setup_dishka(container, app, finalize_container=True, auto_inject=True)
 
     async def init_container(*_: object):
-        await container.init()
+        await container.__aenter__()
 
     app.on_startup(init_container)
 
