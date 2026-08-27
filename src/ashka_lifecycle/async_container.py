@@ -1,15 +1,18 @@
 from asyncio import gather
 from collections.abc import Callable, Coroutine
+from logging import getLogger
 
 from ashka_lifecycle.entities.bootstrap import (
     bootstrap_types,
 )
 
-from dishka import AsyncContainer
+from dishka import AsyncContainer, Scope
 
 
 def activate(): ...
 
+
+_logger = getLogger(__name__)
 
 _aenter: Callable[..., Coroutine[None, object, AsyncContainer]] = (
     AsyncContainer.__aenter__
@@ -19,26 +22,23 @@ _aenter: Callable[..., Coroutine[None, object, AsyncContainer]] = (
 async def __aenter__(self: AsyncContainer) -> AsyncContainer:
     aenter: AsyncContainer = await _aenter(self)
 
-    await gather(
-        *(
-            self.get(key.type_hint, key.component)
-            for registry in iter(
-                lambda state=[self.registry]: (
-                    (state[0], state.__setitem__(0, state[0].child_registry))[0]  # pyright: ignore[reportCallIssue, reportArgumentType]
-                    if state[0] is not None  # pyright: ignore[reportUnnecessaryComparison]
-                    else None
-                ),
-                None,
+    if self.scope is Scope.APP:
+        await gather(
+            *(
+                self.get(key.type_hint, key.component)
+                for key in self.registry.factories
+                if key.type_hint in bootstrap_types
             )
-            for key in registry.factories
-            if key.type_hint in bootstrap_types
         )
-    )
 
     return aenter
 
 
 async def init(self: AsyncContainer) -> None:
+    if not self.scope is Scope.APP:
+        _logger.warning(
+            f"With scope = {self.scope}, container.init() won't do any bootstrap."
+        )
     await self.__aenter__()
 
 
