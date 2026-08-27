@@ -57,7 +57,7 @@ actual containers.
 - [Integration Container Access](features/integration-container-access.md)
 - [Type-Dispatched Integrations](features/type-dispatched-integrations.md)
 - [Bootstrap Lifecycle](features/bootstrap-lifecycle.md) (requires `ashka[lifecycle]`)
-- [Generic Lifespan](features/lifespan.md) (requires `ashka[lifecycle]`)
+- [Generic Lifespan](features/lifespan.md)
 
 ## Support
 
