@@ -58,7 +58,9 @@ def provide(
         return _provide(source, scope=scope, **kwargs)
 
     def scoped(source: ProvideSource) -> CompositeDependencySource:  # pyright: ignore[reportUnknownParameterType]
-        _logger.debug(f"Adding {source.__name__!r} to bootstrap list...")
+        _logger.debug(
+            f"Adding {getattr(source, '__name__', source)!r} to bootstrap list..."  # pyright: ignore[reportUnknownArgumentType]
+        )
         bootstrap_types.add(
             new_type := NewType(
                 "ashka_lifecycle.provider.make_factory.provide", AshkaScope
