@@ -42,7 +42,7 @@ def provide(
 
 
 def provide(
-    source: ProvideSource | None = None,
+    source: ProvideSource | None = None,  # pyright: ignore[reportUnknownParameterType]
     *,
     scope: BaseScope | AshkaScope | None = None,
     **kwargs: Any,
