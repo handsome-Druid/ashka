@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from inspect import isbuiltin, isclass, isfunction
+from logging import getLogger
 from typing import Any, NewType, get_origin, get_type_hints, overload
 
 from ashka_lifecycle.entities.bootstrap import (
@@ -19,6 +20,8 @@ from dishka.provider.make_factory import (
 )
 
 __all__: list[str] = ["provide"]
+
+_logger = getLogger(__name__)
 
 
 def activate(): ...
@@ -55,6 +58,12 @@ def provide(
         return _provide(source, scope=scope, **kwargs)
 
     def scoped(source: ProvideSource) -> CompositeDependencySource:  # pyright: ignore[reportUnknownParameterType]
+        _logger.debug(f"Adding {source.__name__!r} to bootstrap list...")
+        bootstrap_types.add(
+            new_type := NewType(
+                "ashka_lifecycle.provider.make_factory.provide", AshkaScope
+            )
+        )
         try:
             return (
                 _provide(
@@ -65,8 +74,7 @@ def provide(
                     ],
                     **_kwargs,
                 )
-                if bootstrap_types.add(new_type := NewType("_", object)) is None
-                and (provides := "provides") in kwargs
+                if (provides := "provides") in kwargs
                 else _provide(
                     source,
                     scope=Scope.APP,
@@ -94,6 +102,7 @@ def provide(
                 )
             )
         except KeyError as e:
+            bootstrap_types.remove(new_type)
             raise MissingReturnHintError(source) from e
 
     return scoped if source is None else scoped(source)  # pyright: ignore[reportUnknownVariableType]

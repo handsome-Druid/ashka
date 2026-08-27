@@ -23,12 +23,17 @@ async def __aenter__(self: AsyncContainer) -> AsyncContainer:
     aenter: AsyncContainer = await _aenter(self)
 
     if self.scope is Scope.APP:
+        _logger.debug("Initiating bootstrap factories.")
         await gather(
             *(
                 self.get(key.type_hint, key.component)
                 for key in self.registry.factories
                 if key.type_hint in bootstrap_types
             )
+        )
+    else:
+        _logger.debug(
+            f"'<dishka_container>.scope': {self.scope!r} is not 'Scope.APP', skipping bootstrap"
         )
 
     return aenter
@@ -37,7 +42,7 @@ async def __aenter__(self: AsyncContainer) -> AsyncContainer:
 async def init(self: AsyncContainer) -> None:
     if not self.scope is Scope.APP:
         _logger.warning(
-            f"With scope = {self.scope}, container.init() won't do any bootstrap."
+            f"'<dishka_container>.scope': {self.scope!r} is not 'Scope.APP', 'container.init()' won't do any bootstrap."
         )
     await self.__aenter__()
 
