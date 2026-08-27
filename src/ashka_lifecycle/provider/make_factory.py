@@ -8,10 +8,9 @@ from ashka_lifecycle.entities.bootstrap import (
 )
 from ashka_lifecycle.entities.scope import AshkaScope
 
-from dishka import BaseScope, Scope
+from dishka import AnyOf, BaseScope, Scope
 from dishka import provide as _provide  # pyright: ignore[reportUnknownVariableType]
 from dishka.dependency_source.composite import CompositeDependencySource
-from dishka.entities.provides_marker import ProvideMultiple
 from dishka.provider.exceptions import MissingReturnHintError
 from dishka.provider.make_factory import (
     ProvideSource,
@@ -43,7 +42,7 @@ def provide(
 
 
 def provide(
-    source: ProvideSource | None = None,  # pyright: ignore[reportUnknownParameterType]
+    source: ProvideSource | None = None,
     *,
     scope: BaseScope | AshkaScope | None = None,
     **kwargs: Any,
@@ -57,54 +56,63 @@ def provide(
     if scope is not AshkaScope.BOOTSTRAP:
         return _provide(source, scope=scope, **kwargs)
 
-    def scoped(source: ProvideSource) -> CompositeDependencySource:  # pyright: ignore[reportUnknownParameterType]
+    def scoped(source: Any) -> CompositeDependencySource:
         _logger.debug(
-            f"Adding {getattr(source, '__name__', source)!r} to bootstrap list..."  # pyright: ignore[reportUnknownArgumentType]
+            f"Adding {getattr(source, '__name__', source)!r} to bootstrap list..."
         )
-        bootstrap_types.add(
-            new_type := NewType(
-                "ashka_lifecycle.provider.make_factory.provide", AshkaScope
-            )
-        )
-        try:
-            return (
-                _provide(
-                    source,
-                    scope=Scope.APP,
-                    provides=ProvideMultiple[
-                        new_type, (_kwargs := kwargs.copy()).pop(provides)  # pyright: ignore[reportInvalidTypeArguments]
-                    ],
-                    **_kwargs,
-                )
-                if (provides := "provides") in kwargs
-                else _provide(
-                    source,
-                    scope=Scope.APP,
-                    provides=ProvideMultiple[
-                        new_type,
-                        source  # pyright: ignore[reportInvalidTypeArguments]
-                        if isclass(source) or isclass(get_origin(source))  # pyright: ignore[reportUnknownArgumentType]
-                        else _clean_result_hint(
-                            _guess_factory_type(
-                                func := getattr(source, "__func__", None)  # pyright: ignore[reportUnknownVariableType, reportUnknownArgumentType]
-                                or (
-                                    source
-                                    if isfunction(source) or isbuiltin(source)  # pyright: ignore[reportUnknownArgumentType]
-                                    else getattr(
-                                        source.__call__,  # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType, reportUnknownArgumentType]
-                                        "__func__",
-                                        source.__call__,  # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType, reportUnknownArgumentType]
-                                    )
-                                )
-                            ),
-                            get_type_hints(func)["return"],  # pyright: ignore[reportUnknownArgumentType]
-                        ),
-                    ],
-                    **kwargs,
-                )
-            )
-        except KeyError as e:
-            bootstrap_types.remove(new_type)
-            raise MissingReturnHintError(source) from e
 
-    return scoped if source is None else scoped(source)  # pyright: ignore[reportUnknownVariableType]
+        bootstrap_type = NewType(
+            "bootstrap_type",
+            AshkaScope,
+        )
+
+        bootstrap_types.add(bootstrap_type)
+
+        provides = "provides"
+
+        if provides in kwargs:
+            _kwargs = kwargs.copy()
+
+            _provides = _kwargs.pop(provides)
+
+            return _provide(
+                source, scope=Scope.APP, provides=AnyOf[bootstrap_type, _provides], **_kwargs
+            )
+
+        if isclass(source) or isclass(get_origin(source)):
+            return _provide(
+                source, scope=Scope.APP, provides=AnyOf[bootstrap_type, source], **kwargs
+            )
+
+        return_ = "return"
+
+        if isfunction(source) or isbuiltin(source):
+            func = source
+
+        elif hasattr(source, "__func__"):
+            func = source.__func__
+
+        else:
+            func = getattr(source.__call__, "__func__", source.__call__)
+
+        factory_type = _guess_factory_type(func)
+
+        type_hints = get_type_hints(func)
+
+        if return_ not in type_hints:
+            bootstrap_types.remove(bootstrap_type)
+
+            raise MissingReturnHintError(source)
+
+        possible_dependency = type_hints[return_]
+
+        type_hint = _clean_result_hint(factory_type, possible_dependency)
+
+        return _provide(
+            source, scope=Scope.APP, provides=AnyOf[bootstrap_type, type_hint], **kwargs
+        )
+
+    if source is None:
+        return scoped
+
+    return scoped(source)

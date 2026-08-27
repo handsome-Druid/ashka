@@ -1,0 +1,124 @@
+# type: ignore
+from collections.abc import Callable
+from inspect import isbuiltin, isclass, isfunction
+from logging import getLogger
+from typing import Any, NewType, get_origin, get_type_hints, overload
+
+from ashka_lifecycle.entities.bootstrap import (
+    bootstrap_types,
+)
+from ashka_lifecycle.entities.scope import AshkaScope
+
+from dishka import AnyOf, BaseScope, Scope
+from dishka import provide as _provide
+from dishka.dependency_source.composite import CompositeDependencySource
+from dishka.provider.exceptions import MissingReturnHintError
+from dishka.provider.make_factory import (
+    ProvideSource,
+    _clean_result_hint,
+    _guess_factory_type,
+)
+
+__all__: list[str] = ["provide"]
+
+_logger = getLogger(__name__)
+
+
+def activate(): ...
+
+
+
+@overload
+def provide(
+    *, scope: BaseScope | AshkaScope | None = None, **kwargs: Any
+) -> Callable[[Callable[..., Any]], CompositeDependencySource]: ...
+
+
+@overload
+def provide(
+    source: ProvideSource,
+    *,
+    scope: BaseScope | AshkaScope | None = None,
+    **kwargs: Any,
+) -> CompositeDependencySource: ...
+
+
+def provide(
+    source: ProvideSource | None = None,
+    *,
+    scope: BaseScope | AshkaScope | None = None,
+    **kwargs: Any,
+) -> (
+    CompositeDependencySource
+    | Callable[
+        [Callable[..., Any]],
+        CompositeDependencySource,
+    ]
+):
+    return (
+        _provide(source, scope=scope, **kwargs)
+        if scope is not AshkaScope.BOOTSTRAP
+        else (
+            scoped
+            if (
+                scoped := (
+                    lambda source: (
+                        _provide(
+                            source,
+                            scope=Scope.APP,
+                            provides=AnyOf[
+                                NewType_, (_kwargs := kwargs.copy()).pop(provides)
+                            ],
+                            **_kwargs,
+                        )
+                        if bootstrap_types.add(
+                            NewType_ := NewType(
+                                "ashka_lifecycle.provider.make_factory.provide",
+                                AshkaScope,
+                            )
+                        )
+                        is None
+                        and _logger.debug(
+                            f"Adding {getattr(source, '__name__', source)!r} to bootstrap list..."
+                        )
+                        is None
+                        and (provides := "provides") in kwargs
+                        else _provide(
+                            source,
+                            scope=Scope.APP,
+                            provides=AnyOf[
+                                NewType_,
+                                source
+                                if isclass(source) or isclass(get_origin(source))
+                                else _clean_result_hint(
+                                    _guess_factory_type(
+                                        func := getattr(source, "__func__", None)
+                                        or (
+                                            source
+                                            if isfunction(source) or isbuiltin(source)
+                                            else getattr(
+                                                source.__call__,
+                                                "__func__",
+                                                source.__call__,
+                                            )
+                                        )
+                                    ),
+                                    type_hints[return_]
+                                    if (return_ := "return")
+                                    in (type_hints := get_type_hints(func))
+                                    or bootstrap_types.remove(NewType_) is not None
+                                    else (_ for _ in ()).throw(
+                                        MissingReturnHintError(source)
+                                    ),
+                                ),
+                            ],
+                            **kwargs,
+                        )
+                    )
+                )
+            )
+            is not None
+            and source is None
+            else scoped(source)
+        )
+    )
