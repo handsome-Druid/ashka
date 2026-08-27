@@ -1,10 +1,9 @@
 from collections.abc import AsyncIterator
 
 from ashka_lifecycle import (
+    AshkaScope,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
-from ashka_lifecycle.async_container import AsyncContainer
-from ashka_lifecycle.entities.scope import AshkaScope
 
 import pytest
 from ashka.integrations import get_container as get_dispatch_container
@@ -12,7 +11,7 @@ from ashka.integrations.faststream import (
     get_container,
     setup_dishka,  # pyright: ignore[reportUnknownVariableType]
 )
-from dishka import FromDishka, Provider, make_async_container
+from dishka import AsyncContainer, FromDishka, Provider, make_async_container
 from faststream import FastStream
 from faststream.redis import RedisBroker, TestApp, TestRedisBroker
 

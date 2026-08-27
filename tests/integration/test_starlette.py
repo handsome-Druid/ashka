@@ -2,14 +2,13 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from ashka_lifecycle import (
+    AshkaScope,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
-from ashka_lifecycle.async_container import AsyncContainer
-from ashka_lifecycle.entities.scope import AshkaScope
 
 from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.starlette import get_container, setup_dishka
-from dishka import Provider, make_async_container
+from dishka import AsyncContainer, Provider, make_async_container
 from starlette.applications import Starlette
 from starlette.responses import PlainTextResponse
 from starlette.routing import Route

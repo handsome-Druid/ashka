@@ -20,6 +20,9 @@ from dishka.provider.make_factory import (
 __all__: list[str] = ["provide"]
 
 
+def activate(): ...
+
+
 @overload
 def provide(
     *, scope: BaseScope | AshkaScope | None = None, **kwargs: Any

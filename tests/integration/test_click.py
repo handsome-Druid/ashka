@@ -1,16 +1,15 @@
 from collections.abc import Iterator
 
 from ashka_lifecycle import (
+    AshkaScope,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
-from ashka_lifecycle.container import Container
-from ashka_lifecycle.entities.scope import AshkaScope
 
 import click
 from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.click import get_container, setup_dishka
 from click.testing import CliRunner
-from dishka import FromDishka, Provider, make_container
+from dishka import Container, FromDishka, Provider, make_container
 
 
 def test_click_bootstrap_lifecycle():

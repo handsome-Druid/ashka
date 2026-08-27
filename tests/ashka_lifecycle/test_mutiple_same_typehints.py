@@ -5,9 +5,8 @@ from ashka_lifecycle import (
     AshkaScope,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
-from ashka_lifecycle.container import Container
 
-from dishka import Provider, make_async_container, make_container
+from dishka import Container, Provider, make_async_container, make_container
 from pytest import fixture
 
 result: set[str] = set()

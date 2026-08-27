@@ -7,6 +7,10 @@ from ashka_lifecycle.entities.bootstrap import (
 
 from dishka import AsyncContainer
 
+
+def activate(): ...
+
+
 _aenter: Callable[..., Coroutine[None, object, AsyncContainer]] = (
     AsyncContainer.__aenter__
 )

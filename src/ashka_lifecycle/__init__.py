@@ -1,3 +1,5 @@
+import ashka_lifecycle.async_container
+import ashka_lifecycle.container
 from ashka_lifecycle.entities.scope import AshkaScope
 from ashka_lifecycle.provider import (
     provide,  # pyright: ignore[reportUnknownVariableType]
@@ -16,3 +18,5 @@ def activate_lifecycle() -> None:
     Call this function manually before importing dishka to ensure that the
     dishka lifecycle is activated in advance.
     """
+    ashka_lifecycle.container.activate()
+    ashka_lifecycle.async_container.activate()

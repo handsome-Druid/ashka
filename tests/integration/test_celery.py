@@ -1,15 +1,14 @@
 from collections.abc import Iterator
 
 from ashka_lifecycle import (
+    AshkaScope,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
-from ashka_lifecycle.container import Container
-from ashka_lifecycle.entities.scope import AshkaScope
 
 from ashka.integrations import get_container as get_dispatch_container
 from ashka.integrations.celery import get_container, setup_dishka
 from celery import Celery  # pyright: ignore[reportMissingTypeStubs]
-from dishka import FromDishka, Provider, make_container
+from dishka import Container, FromDishka, Provider, make_container
 from dishka.integrations.celery import DishkaTask
 
 

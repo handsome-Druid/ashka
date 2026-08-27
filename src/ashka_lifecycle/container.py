@@ -6,6 +6,10 @@ from ashka_lifecycle.entities.bootstrap import (
 
 from dishka import Container
 
+
+def activate(): ...
+
+
 _enter: Callable[..., Container] = Container.__enter__
 
 

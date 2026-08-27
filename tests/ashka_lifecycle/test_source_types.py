@@ -2,9 +2,8 @@ import gc
 from typing import Generic, NewType, TypeVar
 
 from ashka_lifecycle import AshkaScope, provide
-from ashka_lifecycle.container import Container
 
-from dishka import Provider, make_container
+from dishka import Container, Provider, make_container
 
 SourceType = TypeVar("SourceType")
 BuiltinResult = NewType("BuiltinResult", bool)

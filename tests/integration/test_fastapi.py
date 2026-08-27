@@ -2,13 +2,12 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from ashka_lifecycle import (
+    AshkaScope,
     provide,  # pyright: ignore[reportUnknownVariableType]
 )
-from ashka_lifecycle.async_container import AsyncContainer
-from ashka_lifecycle.entities.scope import AshkaScope
 
 from ashka.integrations.fastapi import get_container, setup_dishka
-from dishka import Provider, make_async_container
+from dishka import AsyncContainer, Provider, make_async_container
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
