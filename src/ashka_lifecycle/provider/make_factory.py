@@ -76,12 +76,18 @@ def provide(
             _provides = _kwargs.pop(provides)
 
             return _provide(
-                source, scope=Scope.APP, provides=AnyOf[bootstrap_type, _provides], **_kwargs
+                source,
+                scope=Scope.APP,
+                provides=AnyOf[bootstrap_type, _provides],
+                **_kwargs,
             )
 
         if isclass(source) or isclass(get_origin(source)):
             return _provide(
-                source, scope=Scope.APP, provides=AnyOf[bootstrap_type, source], **kwargs
+                source,
+                scope=Scope.APP,
+                provides=AnyOf[bootstrap_type, source],
+                **kwargs,
             )
 
         return_ = "return"
