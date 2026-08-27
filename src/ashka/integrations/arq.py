@@ -7,6 +7,10 @@ from ashka.integrations._dispatch import dishka_setup, get_container_
 
 from dishka import AsyncContainer
 
+
+def activate(): ...
+
+
 if find_spec("arq"):
     try:
         from arq import Worker

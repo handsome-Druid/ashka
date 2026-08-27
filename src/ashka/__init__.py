@@ -3,16 +3,6 @@ from logging import getLogger
 from os import getenv
 from sys import modules
 
-
-def activate() -> None:
-    """
-    Activate the aishka before lazy imports can defer it.
-
-    Call this function manually before importing dishka to ensure that the
-    aishka is activated in advance.
-    """
-
-
 if "dishka" in modules and getenv(
     env := "ASHKA_DISABLE_IMPORT_WARNING", ""
 ).strip().lower() not in ("1", "true", "yes", "on"):
@@ -28,7 +18,17 @@ from ashka import integrations as integrations
 from ashka.async_lifespan import async_lifespan as async_lifespan
 from ashka.lifespan import lifespan as lifespan
 
-if find_spec("ashka_lifecycle"):
+if found_lifecycle := find_spec("ashka_lifecycle"):
     from ashka_lifecycle import *  # pyright: ignore[reportWildcardImportFromLibrary]
 
-    activate_lifecycle()
+
+def activate() -> None:
+    """
+    Activate the aishka before lazy imports can defer it.
+
+    Call this function manually before importing dishka to ensure that the
+    aishka is activated in advance.
+    """
+    integrations.activate()
+    if found_lifecycle is not None:
+        activate_lifecycle()  # pyright: ignore[reportUnboundVariable]

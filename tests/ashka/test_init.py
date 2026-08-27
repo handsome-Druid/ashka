@@ -42,6 +42,7 @@ def test_after_dishka_with_no_warning():
 def test_no_lifecycle():
     code = """
 from importlib import util
+from sys import modules
 
 real_find_spec = util.find_spec
 
@@ -56,7 +57,9 @@ util.find_spec = find_spec
 
 import ashka
 
-assert not hasattr(ashka, "__all__")
+ashka.activate()
+
+assert "ashka_lifecycle" not in modules
 """
     result = run(
         [executable, "-c", code],

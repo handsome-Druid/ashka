@@ -24,6 +24,6 @@ def lifespan(app: object) -> Generator[None, None, None]:
                 yield
     """
     if not isinstance(container := get_container(app), Container):
-        raise TypeError(f"{type(Container)} is not a sync container!")
+        raise TypeError(f"Expected 'dishka.Container', got {type(container)!r}")
     with container:
         yield

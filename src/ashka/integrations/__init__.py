@@ -35,6 +35,12 @@ __all__: list[str] = [
 ]
 
 
+def activate():
+    for module in __all__:
+        if callable(activate := getattr(globals()[module], "activate", None)):
+            activate()
+
+
 def setup_dishka(
     container: Container | AsyncContainer, app: object, *args: object, **kwargs: object
 ) -> None:
