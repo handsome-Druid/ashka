@@ -105,16 +105,31 @@ await container.init()
 await container.close()
 ```
 
+`lock_factory` is configured when the asynchronous container is created, not
+when `init()` is called. By default, dishka uses a lock that would serialize
+container resolutions. To allow independent bootstrap resolutions to overlap,
+pass `lock_factory=None` when creating the container:
+
+```python
+container = make_async_container(
+    ApplicationProvider(),
+    lock_factory=None,
+)
+```
+
+This disables dishka's container lock. Use it only when concurrent container
+access is safe.
+
 ## Initialization Order
 
 Synchronous containers initialize bootstrap dependencies sequentially in their
 registration order. Each dependency finishes initialization before the next
 one starts.
 
-Asynchronous containers initialize bootstrap dependencies concurrently with
-`asyncio.gather`. Their initialization order is therefore not sequential and
-must not be relied upon. Express dependencies between bootstrap resources
-through provider parameters instead of relying on registration order.
+Asynchronous containers request bootstrap dependencies concurrently with
+`asyncio.gather`. The initialization order must not be relied upon. Express
+dependencies between bootstrap resources through provider parameters instead
+of relying on registration order.
 
 ## Initialization Failure
 

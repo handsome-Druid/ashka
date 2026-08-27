@@ -7,9 +7,7 @@
 `ashka` extends `reagento/dishka` with async/sync application lifecycle support.
 
 The `a` prefix lets `ashka` sort before `dishka`, helping ensure the correct
-import order. The name also means async application lifecycle support, which can
-speed up startup compared with serially initializing components in a lifespan
-function.
+import order.
 
 ## Application Lifecycle
 

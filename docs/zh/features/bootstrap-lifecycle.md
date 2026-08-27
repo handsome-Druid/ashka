@@ -96,14 +96,26 @@ await container.init()
 await container.close()
 ```
 
+`lock_factory` 是创建异步容器时传给 `make_async_container` 的参数，不能在调用
+`init()` 时设置。dishka 默认使用容器锁，这会使容器解析串行化。若要让相互独立的
+bootstrap 依赖有机会重叠初始化，应在创建容器时传入 `lock_factory=None`：
+
+```python
+container = make_async_container(
+    ApplicationProvider(),
+    lock_factory=None,
+)
+```
+
+这会关闭 dishka 的容器锁。只有确认并发访问容器是安全的情况下，才应这样配置。
+
 ## 初始化顺序
 
 同步容器按照注册顺序依次初始化 bootstrap 依赖。每个依赖完成初始化后，才会开始
 初始化下一个依赖。
 
-异步容器通过 `asyncio.gather` 并发初始化 bootstrap 依赖，因此初始化顺序不是
-顺序执行，也不应依赖该顺序。bootstrap 资源之间的依赖应通过 provider 参数表达，
-而不是依赖注册顺序。
+异步容器通过 `asyncio.gather` 并发请求 bootstrap 依赖。初始化顺序不应被依赖。
+bootstrap 资源之间的依赖应通过 provider 参数表达，而不是依赖注册顺序。
 
 ## 初始化失败
 
