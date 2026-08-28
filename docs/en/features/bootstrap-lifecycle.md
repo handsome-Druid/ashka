@@ -16,7 +16,8 @@ behavior.
 
 ## Registering Bootstrap Dependencies
 
-Use `ashka.provide` with `AshkaScope.BOOTSTRAP`:
+Set `AshkaScope.BOOTSTRAP` as the default scope of a `Provider` to make all
+factories without an explicit scope bootstrap factories:
 
 ```python
 from collections.abc import Iterator
@@ -32,7 +33,9 @@ class Database:
 
 
 class ApplicationProvider(Provider):
-    @provide(scope=AshkaScope.BOOTSTRAP)
+    scope = AshkaScope.BOOTSTRAP
+
+    @provide
     def database(self) -> Iterator[Database]:
         database = Database()
         database.connect()
@@ -57,9 +60,9 @@ class ApplicationProvider(Provider):
 For a factory that provides another type, use the `provides` parameter to set
 the type explicitly instead.
 
-Do not set the `scope` attribute of a native dishka `Provider` directly to
-`AshkaScope.BOOTSTRAP`. This usage is not allowed and is not currently planned
-to be supported.
+You can also pass `AshkaScope.BOOTSTRAP` when instantiating a `Provider`. A
+provider-level scope is only the default for factories without an explicit
+scope; set the scope in `@provide` when a factory needs separate control.
 
 `make_container()` only creates the container. It does not run ashka's
 lifecycle `container.init()` or resolve bootstrap dependencies. When the user
@@ -90,7 +93,7 @@ from dishka import Provider, make_async_container
 
 
 class ApplicationProvider(Provider):
-    @provide(scope=AshkaScope.BOOTSTRAP)
+    @provide
     async def database(self) -> AsyncIterator[Database]:
         database = Database()
         database.connect()
@@ -98,7 +101,9 @@ class ApplicationProvider(Provider):
         database.close()
 
 
-container = make_async_container(ApplicationProvider())
+container = make_async_container(
+    ApplicationProvider(scope=AshkaScope.BOOTSTRAP),
+)
 
 await container.init()
 ...
@@ -157,12 +162,13 @@ async with make_async_container(ApplicationProvider()) as container:
 
 ## Bootstrap and Regular Scopes
 
-Only factories registered with `AshkaScope.BOOTSTRAP` are resolved eagerly during
-initialization. Factories registered directly with `Scope.APP` or
-`Scope.RUNTIME` are not triggered automatically. `Scope.APP` and
-`Scope.RUNTIME` are the regular factory scopes. When a factory is registered
-with `AshkaScope.BOOTSTRAP`, ashka converts it to `Scope.APP` and resolves it
-eagerly during initialization:
+Only factories marked as bootstrap factories are resolved eagerly during
+initialization. You can use `AshkaScope.BOOTSTRAP` directly in `@provide`, or
+let factories without an explicit scope inherit a provider's bootstrap scope.
+Factories registered directly with `Scope.APP` or `Scope.RUNTIME` are not
+triggered automatically. When a factory is registered with
+`AshkaScope.BOOTSTRAP`, ashka converts it to `Scope.APP` and resolves it eagerly
+during initialization:
 
 ```python
 from dishka import Scope

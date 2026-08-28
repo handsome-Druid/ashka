@@ -37,10 +37,10 @@ imports to ashka instead of relying on the monkey patches long term.
 | `ashka.integrations.faststream.get_container` | Must be imported from `ashka.integrations.faststream` |
 | `ashka.lifespan` | Must be imported from `ashka`; installing `ashka[lifecycle]` automatically attaches `container.init()` to the lifespan |
 | `ashka.async_lifespan` | Must be imported from `ashka`; installing `ashka[lifecycle]` automatically attaches `container.init()` to the lifespan |
+| `dishka.provide` | Is monkey-patched; requires `ashka[lifecycle]` |
 | `dishka.Container.init` | Is added by monkey patch; requires `ashka[lifecycle]` |
 | `dishka.AsyncContainer.init` | Is added by monkey patch; requires `ashka[lifecycle]` |
 | `ashka.AshkaScope` | Must be imported from `ashka`; requires `ashka[lifecycle]` |
-| `ashka.provide` | Must be imported from `ashka`; requires `ashka[lifecycle]` |
 
 `ashka.container.ContainerType` and
 `ashka.async_container.AsyncContainerType` are not guaranteed public APIs.
