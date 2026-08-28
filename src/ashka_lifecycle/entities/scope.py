@@ -1,7 +1,7 @@
-from enum import Enum
+from dishka import BaseScope, new_scope
 
 __all__ = ["AshkaScope"]
 
 
-class AshkaScope(Enum):
-    BOOTSTRAP = "BOOTSTRAP"
+class AshkaScope(BaseScope):
+    BOOTSTRAP = new_scope("BOOTSTRAP")

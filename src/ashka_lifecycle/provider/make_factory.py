@@ -8,6 +8,7 @@ from ashka_lifecycle.entities.bootstrap import (
 )
 from ashka_lifecycle.entities.scope import AshkaScope
 
+import dishka
 from dishka import AnyOf, BaseScope, Scope
 from dishka import provide as _provide  # pyright: ignore[reportUnknownVariableType]
 from dishka.dependency_source.composite import CompositeDependencySource
@@ -53,8 +54,8 @@ def provide(
         CompositeDependencySource,
     ]
 ):
-    if scope is not AshkaScope.BOOTSTRAP:
-        return _provide(source, scope=scope, **kwargs)
+
+    is_bootstrap = scope is AshkaScope.BOOTSTRAP
 
     def scoped(source: Any) -> CompositeDependencySource:
         _logger.debug(
@@ -65,8 +66,8 @@ def provide(
             "bootstrap_type",
             AshkaScope,
         )
-
-        bootstrap_types.add(bootstrap_type)
+        if is_bootstrap:
+            bootstrap_types.add(bootstrap_type)
 
         provides = "provides"
 
@@ -77,7 +78,7 @@ def provide(
 
             return _provide(
                 source,
-                scope=Scope.APP,
+                scope=Scope.APP if is_bootstrap else scope,
                 provides=AnyOf[bootstrap_type, _provides],
                 **_kwargs,
             )
@@ -85,7 +86,7 @@ def provide(
         if isclass(source) or isclass(get_origin(source)):
             return _provide(
                 source,
-                scope=Scope.APP,
+                scope=Scope.APP if is_bootstrap else scope,
                 provides=AnyOf[bootstrap_type, source],
                 **kwargs,
             )
@@ -106,8 +107,6 @@ def provide(
         type_hints = get_type_hints(func)
 
         if return_ not in type_hints:
-            bootstrap_types.remove(bootstrap_type)
-
             raise MissingReturnHintError(source)
 
         possible_dependency = type_hints[return_]
@@ -115,10 +114,18 @@ def provide(
         type_hint = _clean_result_hint(factory_type, possible_dependency)
 
         return _provide(
-            source, scope=Scope.APP, provides=AnyOf[bootstrap_type, type_hint], **kwargs
+            source,
+            scope=Scope.APP if is_bootstrap else scope,
+            provides=AnyOf[bootstrap_type, type_hint],
+            **kwargs,
         )
 
     if source is None:
         return scoped
 
     return scoped(source)
+
+
+dishka.provide = dishka.provider.provide = dishka.provider.make_factory.provide = (
+    provide
+)

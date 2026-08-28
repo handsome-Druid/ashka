@@ -1,5 +1,8 @@
 import ashka_lifecycle.async_container
 import ashka_lifecycle.container
+import ashka_lifecycle.provider
+import ashka_lifecycle.provider.make_factory
+import ashka_lifecycle.provider.provider
 from ashka_lifecycle.entities.scope import AshkaScope
 from ashka_lifecycle.provider import (
     provide,  # pyright: ignore[reportUnknownVariableType]
@@ -20,3 +23,5 @@ def activate_lifecycle() -> None:
     """
     ashka_lifecycle.container.activate()
     ashka_lifecycle.async_container.activate()
+    ashka_lifecycle.provider.provider.activate()
+    ashka_lifecycle.provider.make_factory.activate()
