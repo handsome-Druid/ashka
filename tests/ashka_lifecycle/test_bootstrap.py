@@ -1,8 +1,6 @@
 from collections.abc import AsyncIterator, Iterator
 
-from ashka_lifecycle import (
-    AshkaScope
-)
+from ashka_lifecycle import AshkaScope
 
 import pytest
 from dishka import (
@@ -12,7 +10,7 @@ from dishka import (
     Scope,
     make_async_container,
     make_container,
-    provide
+    provide,
 )
 
 
