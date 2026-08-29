@@ -1,8 +1,10 @@
+from collections.abc import Callable
+from functools import wraps
 from importlib.util import find_spec
 from logging import getLogger
 from os import getenv
 from sys import modules
-from typing import Any
+from typing import Concatenate, ParamSpec, TypeVar
 
 from ashka.async_container import AsyncContainerType
 from ashka.integrations._dispatch import dishka_setup, get_container_
@@ -12,6 +14,11 @@ from dishka import AsyncContainer
 
 def activate(): ...
 
+
+P = ParamSpec("P")
+R = TypeVar("R")
+MessageT = TypeVar("MessageT")
+ConnectionT = TypeVar("ConnectionT")
 
 if "dishka.integrations.faststream" in modules and getenv(
     env := "ASHKA_DISABLE_IMPORT_WARNING", ""
@@ -53,7 +60,31 @@ else:
 
 __all__: list[str] = ["get_container", "setup_dishka"]
 
-_setup_dishka = faststream_.setup_dishka  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
+
+def _setup_dishka(
+    setup_dishka: Callable[Concatenate[AsyncContainer, P], R],
+):
+    @wraps(setup_dishka)
+    def wrapped(
+        container: AsyncContainer,
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> R:
+        return_: R = setup_dishka(container, *args, **kwargs)
+        app = args[0] if args else kwargs.get("app")
+        broker = args[1] if len(args) > 1 else kwargs.get("broker")
+        if app:
+            app.broker.dishka_container = container  # pyright: ignore[reportOptionalMemberAccess, reportAttributeAccessIssue, reportUnknownMemberType]
+        elif broker:
+            broker.dishka_container = container  # pyright: ignore[reportAttributeAccessIssue]
+        return return_
+
+    return wrapped
+
+
+faststream.setup_dishka = faststream_.setup_dishka = setup_dishka = _setup_dishka(
+    faststream.setup_dishka
+)
 
 
 @dishka_setup.register(FastStream)
@@ -63,48 +94,23 @@ def _app_setup(
     *args: object,
     **kwargs: object,
 ) -> None:
-    _setup_dishka(container, app, None, *args, **kwargs)
-    app.broker.dishka_container = container  # pyright: ignore[reportOptionalMemberAccess, reportAttributeAccessIssue, reportUnknownMemberType]
+    setup_dishka(container, app, None, *args, **kwargs)
 
 
 @dishka_setup.register(BrokerType)  # pyright: ignore[reportUnknownArgumentType]
-def _broker_setup(
-    broker: "BrokerType[Any, Any]",  # pyright: ignore[reportUnknownParameterType]
+def _broker_setup(  # pyright: ignore[reportUnusedFunction]
+    broker: "BrokerType[MessageT, ConnectionT]",  # pyright: ignore[reportUnknownParameterType]
     container: AsyncContainer,
     *args: object,
     **kwargs: object,
 ) -> None:
-    _setup_dishka(container, None, broker, *args, **kwargs)  # pyright: ignore[reportUnknownArgumentType]
-    broker.dishka_container = container  # pyright: ignore[reportAttributeAccessIssue]
-
-
-def setup_dishka(
-    container: AsyncContainer,
-    app: "Application | ApplicationLike | None" = None,  # pyright: ignore[reportUnknownParameterType]
-    broker: "BrokerType[Any, Any] | None" = None,  # pyright: ignore[reportUnknownParameterType]
-    *args: object,
-    **kwargs: object,
-) -> None:
-    if app and not broker:
-        _app_setup(app, container, *args, **kwargs)
-        return
-
-    if broker and not app:
-        _broker_setup(broker, container, *args, **kwargs)
-        return
-
-    raise ValueError(
-        "You must provide either app or broker to setup dishka integration.",
-    )
-
-
-faststream.setup_dishka = faststream_.setup_dishka = setup_dishka
+    setup_dishka(container, None, broker, *args, **kwargs)  # pyright: ignore[reportUnknownArgumentType]
 
 
 @get_container_.register(FastStream)
 @get_container_.register(BrokerType)  # pyright: ignore[reportUnknownArgumentType]
 def get_container(
-    app_or_broker: "Application | ApplicationLike | BrokerType[Any, Any]",  # pyright: ignore[reportUnknownParameterType]
+    app_or_broker: "Application | ApplicationLike | BrokerType[MessageT, ConnectionT]",  # pyright: ignore[reportUnknownParameterType]
 ) -> AsyncContainerType:
     if hasattr(app_or_broker, "dishka_container"):  # pyright: ignore[reportUnknownArgumentType]
         return app_or_broker.dishka_container  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType, reportAttributeAccessIssue]
