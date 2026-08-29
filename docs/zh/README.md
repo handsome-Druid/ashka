@@ -33,10 +33,10 @@ Bootstrap 阶段初始化。
 | `ashka.integrations.faststream.get_container` | 需要从 `ashka.integrations.faststream` 导入 |
 | `ashka.lifespan` | 需要从 `ashka` 导入；安装 `ashka[lifecycle]` 后会自动将 `container.init()` 挂载到 lifespan |
 | `ashka.async_lifespan` | 需要从 `ashka` 导入；安装 `ashka[lifecycle]` 后会自动将 `container.init()` 挂载到 lifespan |
+| `dishka.provide` | 会 monkey patch；需要安装 `ashka[lifecycle]` |
 | `dishka.Container.init` | 通过 monkey patch 添加；需要安装 `ashka[lifecycle]` |
 | `dishka.AsyncContainer.init` | 通过 monkey patch 添加；需要安装 `ashka[lifecycle]` |
 | `ashka.AshkaScope` | 需要从 `ashka` 导入；需要安装 `ashka[lifecycle]` |
-| `ashka.provide` | 需要从 `ashka` 导入；需要安装 `ashka[lifecycle]` |
 
 `ashka.container.ContainerType` 和 `ashka.async_container.AsyncContainerType`
 不是承诺的公开 API，仅可用于类型标注，不可用于运行时判断。对实际容器使用

@@ -14,7 +14,8 @@
 
 ## 注册 Bootstrap 依赖
 
-将 `AshkaScope.BOOTSTRAP` 传给 `ashka.provide`：
+可以将 `AshkaScope.BOOTSTRAP` 设置为 `Provider` 的默认 scope，使其中未显式
+指定 scope 的 factory 都成为 bootstrap factory：
 
 ```python
 from collections.abc import Iterator
@@ -30,7 +31,9 @@ class Database:
 
 
 class ApplicationProvider(Provider):
-    @provide(scope=AshkaScope.BOOTSTRAP)
+    scope = AshkaScope.BOOTSTRAP
+
+    @provide
     def database(self) -> Iterator[Database]:
         database = Database()
         database.connect()
@@ -53,8 +56,9 @@ class ApplicationProvider(Provider):
 
 如果 factory 提供的是其他类型，也可以使用 `provides` 参数显式指定类型。
 
-不要把原生 dishka `Provider` 的 `scope` 属性直接设置为
-`AshkaScope.BOOTSTRAP`。不允许这种用法，目前也没有支持该用法的计划。
+也可以在实例化 `Provider` 时传入 `AshkaScope.BOOTSTRAP`。Provider 级 scope
+只作为未显式指定 scope 的 factory 的默认值；需要单独控制某个 factory 时，仍可在
+`@provide` 中设置 scope。
 
 `make_container()` 只负责创建容器，不会执行 ashka 的生命周期
 `container.init()`，也不会解析 bootstrap 依赖。用户调用 `container.init()` 或
@@ -81,7 +85,7 @@ from dishka import Provider, make_async_container
 
 
 class ApplicationProvider(Provider):
-    @provide(scope=AshkaScope.BOOTSTRAP)
+    @provide
     async def database(self) -> AsyncIterator[Database]:
         database = Database()
         database.connect()
@@ -89,7 +93,9 @@ class ApplicationProvider(Provider):
         database.close()
 
 
-container = make_async_container(ApplicationProvider())
+container = make_async_container(
+    ApplicationProvider(scope=AshkaScope.BOOTSTRAP),
+)
 
 await container.init()
 ...
@@ -141,11 +147,11 @@ async with make_async_container(ApplicationProvider()) as container:
 
 ## Bootstrap 与普通 Scope
 
-初始化期间只会主动解析使用 `AshkaScope.BOOTSTRAP` 注册的 factory。直接使用
-`Scope.APP` 或 `Scope.RUNTIME` 注册的 factory 都不会自动触发。换句话说，
-`Scope.APP` 和 `Scope.RUNTIME` 只表示普通 factory 的 scope。使用
-`AshkaScope.BOOTSTRAP` 注册时，ashka 会将该 factory 转换为 `Scope.APP`，
-并在初始化时主动解析：
+初始化期间只会主动解析标记为 bootstrap 的 factory。既可以在 `@provide` 中直接使用
+`AshkaScope.BOOTSTRAP`，也可以让未显式指定 scope 的 factory 继承 Provider 的
+bootstrap scope。直接使用 `Scope.APP` 或 `Scope.RUNTIME` 注册的 factory 都不会
+自动触发。使用 `AshkaScope.BOOTSTRAP` 注册时，ashka 会将该 factory 转换为
+`Scope.APP`，并在初始化时主动解析：
 
 ```python
 from dishka import Scope
