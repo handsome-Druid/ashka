@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from functools import wraps
-from typing import Any
+from typing import Any, ParamSpec, TypeVar, cast
 
 from ashka_lifecycle.entities.bootstrap import bootstrap_types
 from ashka_lifecycle.entities.scope import AshkaScope
@@ -12,16 +12,21 @@ from dishka.dependency_source import CompositeDependencySource
 def activate(): ...
 
 
-def __init__(__init__: Callable[..., None]) -> Callable[..., None]:
+P = ParamSpec("P")
+R = TypeVar("R")
+
+
+def __init__(__init__: Callable[P, R]) -> Callable[P, R]:
     @wraps(__init__)
-    def inner(self: Provider, *args: Any, **kwargs: Any):
+    def inner(*args: P.args, **kwargs: P.kwargs) -> R:
         is_bootstrap = False
         args_ = kwargs_ = None
-        if args and args[0] is AshkaScope.BOOTSTRAP:
-            args_ = (Scope.APP,) + args[1:]
+        self = cast(Provider, args[0])
+        if len(args) >= 2 and args[1] is AshkaScope.BOOTSTRAP:
+            args_ = cast(Any, (self, Scope.APP) + args[2:])
             is_bootstrap = True
         elif kwargs.get("scope", None) is AshkaScope.BOOTSTRAP:
-            (kwargs_ := kwargs.copy())["scope"] = Scope.APP
+            (kwargs_ := cast(Any, kwargs.copy()))["scope"] = Scope.APP
             is_bootstrap = True
         elif self.scope is AshkaScope.BOOTSTRAP:
             self.scope = Scope.APP
@@ -34,7 +39,7 @@ def __init__(__init__: Callable[..., None]) -> Callable[..., None]:
                     and not v.dependency_sources[1].scope  # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType]
                 ):
                     bootstrap_types.add(v.dependency_sources[1].provides.type_hint)  # pyright: ignore[reportUnknownMemberType, reportUnknownArgumentType, reportAttributeAccessIssue]
-        return __init__(self, *(args_ or args), **(kwargs_ or kwargs))
+        return __init__(*(args_ or args), **(kwargs_ or kwargs))
 
     return inner
 

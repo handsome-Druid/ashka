@@ -1,7 +1,7 @@
 from collections.abc import Generator
 
-from ashka import AshkaScope, provide
-from dishka import AnyOf, Provider, make_async_container, make_container
+from ashka import AshkaScope
+from dishka import AnyOf, Provider, make_async_container, make_container, provide
 from pytest import mark
 
 a = 0
