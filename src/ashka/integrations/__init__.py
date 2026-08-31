@@ -35,7 +35,7 @@ __all__: list[str] = [
 ]
 
 
-def activate():
+def activate() -> None:
     for module in __all__:
         if callable(activate := getattr(globals()[module], "activate", None)):
             activate()
