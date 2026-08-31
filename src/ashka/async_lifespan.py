@@ -40,4 +40,6 @@ async def async_lifespan(app: object) -> AsyncGenerator[None, None]:
             with container:
                 yield
         case _:  # pragma: nocover
-            raise TypeError(f"Expected 'dishka.AsyncContainer', got {type(container)!r}")
+            raise TypeError(
+                f"Expected 'dishka.AsyncContainer', got {type(container)!r}"
+            )
