@@ -36,7 +36,7 @@ def __init__(__init__: Callable[P, R]) -> Callable[P, R]:
             for v in type(self).__dict__.values():
                 if (
                     isinstance(v, CompositeDependencySource)
-                    and not v.dependency_sources[1].scope  # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType]
+                    and v.dependency_sources[1].scope is None  # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType]
                 ):
                     bootstrap_types.add(v.dependency_sources[1].provides.type_hint)  # pyright: ignore[reportUnknownMemberType, reportUnknownArgumentType, reportAttributeAccessIssue]
         return __init__(*(args_ or args), **(kwargs_ or kwargs))
