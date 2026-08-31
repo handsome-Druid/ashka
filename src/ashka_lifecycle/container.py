@@ -33,7 +33,7 @@ def __enter__(self: Container) -> Container:
 
 
 def init(self: Container) -> None:
-    if not self.scope is Scope.APP:
+    if self.scope is not Scope.APP:
         _logger.warning(
             f"'<dishka_container>.scope': {self.scope!r} is not 'Scope.APP', 'container.init()' won't do any bootstrap."
         )
