@@ -119,7 +119,7 @@ def _provide(provide: Callable[P, R]) -> Callable[P, R]:
             source = args[0]
 
         if source is None:
-            source = kwargs.get("source", None)
+            source = _kwargs.pop("source", None)
         if source is None:
             return cast(R, scoped)
 

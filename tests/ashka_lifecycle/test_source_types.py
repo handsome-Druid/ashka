@@ -3,7 +3,8 @@ from typing import Generic, NewType, TypeVar
 
 from ashka_lifecycle import AshkaScope, provide
 
-from dishka import Container, Provider, make_container
+import pytest
+from dishka import BaseScope, Container, Provider, Scope, make_container
 
 SourceType = TypeVar("SourceType")
 BuiltinResult = NewType("BuiltinResult", bool)
@@ -83,3 +84,35 @@ def test_bootstrap_source_types():
             "staticmethod",
         }
         assert container.get(BuiltinResult) is gc.isenabled()
+
+
+@pytest.mark.parametrize("scope", [Scope.APP, AshkaScope.BOOTSTRAP])
+@pytest.mark.parametrize("source_kind", ["class", "function", "explicit_provides"])
+def test_provide_keyword_source(source_kind: str, scope: BaseScope):
+    created.clear()
+
+    def create_source() -> ClassSource:
+        return ClassSource()
+
+    if source_kind == "explicit_provides":
+        factory = provide(
+            source=staticmethod(create_source),
+            scope=scope,
+            provides=ClassSource,
+        )
+    else:
+        source = ClassSource if source_kind == "class" else staticmethod(create_source)
+        factory = provide(source=source, scope=scope)
+
+    class KeywordSourceProvider(Provider):
+        value = factory
+
+    container = make_container(KeywordSourceProvider())
+    assert created == set()
+
+    with container:
+        assert created == ({"class"} if scope is AshkaScope.BOOTSTRAP else set())
+        value = container.get(ClassSource)
+        assert isinstance(value, ClassSource)
+        assert created == {"class"}
+        assert container.get(ClassSource) is value
